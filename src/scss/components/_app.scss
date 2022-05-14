@@ -1,0 +1,10 @@
+.app {
+    & .app__body {
+        background: var(--bg-color);
+        display: flex;
+        flex-direction: column;
+        margin-top: 80px;
+        width: 100%;
+        overflow-y: hidden;
+    }
+}

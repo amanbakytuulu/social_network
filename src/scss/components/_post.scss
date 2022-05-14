@@ -1,0 +1,123 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
+
+.post {
+    margin: 0.70rem 0rem;
+    border: 1px solid var(--container-color);
+    border-top: hidden;
+    border-bottom: 1px solid var(--container-color);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-post-color);
+
+    & .post__top {
+        display: flex;
+        align-items: center;
+        padding: 0.9rem 1.2rem;
+
+        & .post__avatar {
+            margin-right: 0.6rem;
+        }
+
+        & .post__info {
+            line-height: 1.12rem;
+            & a {
+                font-size: 0.92rem;
+                font-weight: 600;
+                color: var(--first-color);
+            }
+
+            & p {
+                font-size: 0.75rem;
+                color: var(--text-color);
+            }
+        }
+    }
+
+    & .post__text {
+        padding: 0.3rem 1.2rem 0.9rem;
+        text-overflow: ellipsis;
+        & p {
+            font-size: 0.92rem;
+            color: var(--first-color);
+
+            & a {
+                color: #393a4f;
+                font-weight: 500;
+            }
+        }
+    }
+
+    & img, & .post__video {
+        max-height: 400px;
+        width: 100%;
+        height: 100%;
+        object-fit:contain;
+        cursor: pointer;
+        transition: all .3s ease-in-out;
+
+        &.scale{
+            transform: scale(1.7);
+            z-index: 99;
+        }
+        
+    }
+
+    & .post__bottom {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+
+        & .post__left {
+            padding: 5px 0px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            & .post__option {
+                display: flex;
+                align-items: center;
+
+                .post__icon{
+                    color:var(--second-color);
+                }
+
+                & strong {
+                    font-weight: 500;
+                    color: var(--second-color);
+                    margin: 0px 15px;
+
+                    & span {
+                        font-size: 13px;
+                    }
+                }
+            }
+        }
+
+        & .post__right {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            & .post__ava {
+                width: 24px;
+                height: 24px;
+                margin-right: -6px;
+            }
+            & .post__liked {
+                margin-left: 20px;
+                font-family: "Roboto", sans-serif;
+                font-size: 0.95rem;
+                color:var(--first-color);
+                & strong {
+                    font-size: 0.9rem;
+                    color: var(--first-color);
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .post {
+        padding: 0.6rem 0.3rem;
+    }
+}
