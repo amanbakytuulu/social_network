@@ -48,6 +48,8 @@
     &:hover {
         background-color: rgba(179, 174, 174, 0.13);
         border-radius: 10px;
+        border-top-left-radius: 50px;
+        border-bottom-left-radius: 50px;
     }
     &:hover .sidebarRow__title {
         color: #000;

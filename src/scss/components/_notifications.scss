@@ -2,13 +2,13 @@
     font-family: sans-serif;
     position: absolute;
     top: 50px;
-    right: 190px;
+    right: 200px;
     max-width: 330px;
     padding: 0;
     opacity: 0;
     visibility: hidden;
     background-color: var(--bg-color);
-    border:1px solid var(--border-color);
+    border: 1px solid var(--border-color);
     transition: all 0.25s linear;
     &.show {
         top: 80px;
@@ -21,7 +21,7 @@
         font-weight: 700;
         background-color: var(--container-color);
         padding: 15px;
-        color:var(--title-color);
+        color: var(--title-color);
 
         &::before {
             content: "";
@@ -43,8 +43,12 @@
     & ul > li {
         display: flex;
 
-        & div div{
-            color:var(--title-color);
+        & div div {
+            color: var(--title-color);
+
+            & a {
+                text-decoration: none !important;
+            }
         }
         & div:first-child {
             margin-right: 15px;
@@ -59,19 +63,20 @@
                 margin-top: 5px;
                 font-size: 0.8rem;
                 margin-bottom: 20px;
-                font-weight:600;
-                color:#aaaaaa;
+                font-weight: 600;
+                color: #aaaaaa;
             }
         }
     }
-    & .notification__all{
+    & .notification__all {
         cursor: pointer;
-        border-top:'1px solid #aaa';
-        font-weight:600; 
-        color:var(--title-color);
+        border-top: "1px solid #aaa";
+        font-weight: 600;
+        color: var(--title-color);
+        background-color: var(--bg-addpost-color);
 
-        &:hover{
-            color:var(--button-color);
+        &:hover {
+            color: var(--button-color);
         }
     }
 }

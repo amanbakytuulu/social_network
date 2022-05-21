@@ -13,8 +13,7 @@ firebase.initializeApp({
     messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
   });
 
-
-
+ 
 const firestore=firebase.firestore();
 const auth=firebase.auth();
 const storage=firebase.storage();

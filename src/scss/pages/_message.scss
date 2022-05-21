@@ -47,8 +47,6 @@
 }
 
 .message {
-    margin-top: -4px;
-    padding-top: 20px;
     background: var(--bg-color);
     color: var(--title-color);
     height: 86vh;
@@ -75,20 +73,24 @@
         }
 
         & .message__actions {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 2.2rem;
+            height: 2.2rem;
             font-size: 20px;
             margin: 0 0.313rem 0 0;
             background-color: rgba(131, 203, 255, 0.1) !important;
             color: #50b5ff;
             display: inline-block;
             text-align: center;
-            line-height: 2.5rem;
+            line-height: 2.2rem;
             border-radius: 5px;
             cursor: pointer;
-
+            
             &::before {
                 content: "\22EE";
+            }
+
+            &:hover{
+                color:#7ac3f8
             }
         }
     }

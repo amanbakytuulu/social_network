@@ -5,17 +5,22 @@
 .has-shadows {
     box-shadow: 0px 1px 15px 1px rgba(121, 119, 119, 0.15);
 }
-.has-text-blue{
-    color:#118ee7;
-    &:hover{
-        color:#f8fbff;
+
+
+.has-text-blue {
+    color: #118ee7;
+    &:hover {
+        color: #f8fbff;
     }
 }
-
 
 :hover.has-background-blue {
     background: #6ba4e9;
     color: white;
+
+    & .has-text-blue{
+        color:white;
+    }
 }
 
 //header
@@ -31,14 +36,18 @@
 
 //header
 
-.dark-theme .is-darkness-container{
+.dark-theme .is-darkness-container {
     background: var(--container-color) !important;
-    color:#f8fbff !important;
+    color: #f8fbff !important;
 }
-.dark-theme .is-darkness-bg{
+.dark-theme .is-darkness-bg {
     background: var(--bg-color) !important;
-    color:#f8fbff !important;
+    color: #f8fbff !important;
     outline: none;
-    border:none;
+    border: none;
 }
 
+// box
+.box {
+    background-color: var(--container-color);
+}

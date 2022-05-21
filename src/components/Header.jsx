@@ -9,28 +9,20 @@ import { Avatar } from '@mui/material';
 import { auth } from '../firebase';
 import Notifications from './Notifications';
 import { NavLink } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 function Header({ setActive, active }) {
 
     const { theme, changeTheme } = useContext(ThemeContext);
     const [darkMode, setDarkMode] = useState(theme === themes.dark ? true : false);
     const [showNotification, setShowNotification] = useState(false)
+    const [user] = useAuthState(auth);
 
     useEffect(() => {
         changeTheme(darkMode ? themes.dark : themes.light)
 
     }, [darkMode])
 
-    const onSubmit = (e) => {
-        e.preventDefault();
-    }
-
-    const signOut = () => {
-        const isOut = window.confirm("Уверены, что хотите выйти?");
-        if (isOut) {
-            auth.signOut();
-        }
-    }
 
     return (
         <nav style={{ zIndex: '150' }} className={`navbar has-shadows is-spaced is-fixed-top ${darkMode ? 'is-darkness-container' : 'is-white'}`} role="navigation" aria-label="main navigation">
@@ -85,9 +77,11 @@ function Header({ setActive, active }) {
                         </span>
                     </div>
                     <div className="navbar-item">
-                        <span className="image">
-                            <Avatar onClick={signOut} src="https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg" />
-                        </span>
+                        <NavLink to="/setting">
+                            <span className="image">
+                                <Avatar src={user.photoURL} />
+                            </span>
+                        </NavLink>
                     </div>
                 </div>
             </div>
