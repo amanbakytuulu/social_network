@@ -6,9 +6,13 @@
     box-shadow: 0px 1px 15px 1px rgba(121, 119, 119, 0.15);
 }
 
+.is-link {
+    background-color: #05f !important;
+    border-radius: 10px;
+}
 
 .has-text-blue {
-    color: #118ee7;
+    color: #05f;
     &:hover {
         color: #f8fbff;
     }
@@ -18,8 +22,8 @@
     background: #6ba4e9;
     color: white;
 
-    & .has-text-blue{
-        color:white;
+    & .has-text-blue {
+        color: white;
     }
 }
 
@@ -39,12 +43,28 @@
 .dark-theme .is-darkness-container {
     background: var(--container-color) !important;
     color: #f8fbff !important;
+
+    &::placeholder {
+        color: var(--second-color);
+    }
 }
 .dark-theme .is-darkness-bg {
     background: var(--bg-color) !important;
-    color: #f8fbff !important;
+    color: var(--text-color) !important;
     outline: none;
     border: none;
+
+    &::placeholder {
+        color: var(--second-color);
+    }
+
+    &::-moz-placeholder {
+        color: var(--second-color);
+    }
+
+    &::-webkit-input-placeholder {
+        color: var(--second-color);
+    }
 }
 
 // box

@@ -21,12 +21,14 @@ function Sidebar({ setActive, active }) {
                     <SidebarRow Icon={FeedIcon} title="Новости" bg_gradient="btn-round-md bg-blue-gradient" setActive={setActive} />
                     <SidebarRow Icon={ExploreIcon} title="Explore" bg_gradient="btn-round-md bg-orange-gradient" setActive={setActive} />
                     <SidebarRow Icon={FlagIcon} title="Explore Stories" bg_gradient="btn-round-md bg-yellow-gradient" setActive={setActive} />
-                    <SidebarRow Icon={ChatBubbleOutlineIcon} title="Сообщения" bg_gradient="btn-round-md bg-red-gradient" setActive={setActive} />
+                    <NavLink to="chat">
+                        <SidebarRow Icon={ChatBubbleOutlineIcon} title="Сообщения" bg_gradient="btn-round-md bg-red-gradient" setActive={setActive} />
+                    </NavLink>
                     <SidebarRow Icon={PermIdentityIcon} title="Профиль" bg_gradient="btn-round-md bg-sky-gradient" setActive={setActive} />
                 </div>
                 <div className="sidebar__panel">
                     <h3>Аккаунт</h3>
-                    <NavLink to="setting">
+                    <NavLink to="settings">
                         <SidebarRow Icon={HandymanOutlinedIcon} title="Настройки" color="#9f9999" setActive={setActive} />
                     </NavLink>
                     <SidebarRow Icon={AssessmentOutlinedIcon} title="Аналитика" color="#9f9999" setActive={setActive} />

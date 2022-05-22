@@ -4,21 +4,21 @@
     margin: 0 auto;
     max-width: 800px;
     width: 100%;
+    overflow-y: scroll;
 
     & .menu {
-
-        & h1{
-            color:var(--title-color)
+        & h1 {
+            color: var(--title-color);
         }
 
-        & ul li{
+        & ul li {
             border-bottom: 1px solid var(--border-color);
         }
 
         & ul li a {
             color: var(--title-color);
-            margin:12px 0px;
-            padding:0;
+            margin: 12px 0px;
+            padding: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -29,6 +29,10 @@
         }
         & p {
             color: var(--text-color);
+        }
+
+        & .menu-label {
+            margin-bottom: 15px;
         }
 
         & .menu-list {
@@ -46,12 +50,29 @@
             }
         }
     }
+    &::-webkit-scrollbar {
+        height: 10px;
+        display: none;
+    }
 }
 
 @media screen and (max-width: 990px) {
     .settings {
         & .box {
             margin: 0px 15px;
+        }
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .settings {
+        margin-bottom: 20px;
+        & .menu {
+            padding-top: 0px !important;
+
+            & > h1 {
+                padding-bottom: 0px !important;
+            }
         }
     }
 }

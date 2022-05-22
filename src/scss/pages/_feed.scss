@@ -3,6 +3,8 @@
     flex: 1;
     padding: 2rem 0px;
     background-color:var(--bg-color);
+    overflow-y: scroll;
+
     & .feed__body {
         display: flex;
         flex-direction: column;
@@ -38,5 +40,9 @@
             padding: 10px;
             box-shadow: -3px 4px 5px 1px rgba(0, 0, 0, 0.1);
         }
+    }
+    
+    &::-webkit-scrollbar{
+        display: none;
     }
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import SidebarChat from './components/SidebarChat';
-import { auth } from './firebase';
+import { auth, firestore } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Outlet, useNavigate } from 'react-router-dom';
 

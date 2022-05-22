@@ -45,7 +45,7 @@ const SidebarChats = styled.div`
     z-index:99;
     position: fixed;
     top: 103px;
-    right: ${props => props.show ? '10px' : '-240px'};
+    right: ${props => props.show ? '0px' : '-240px'};
     background: var(--container-color);
     border-radius: 10px;
     padding: 15px 20px;
@@ -61,6 +61,7 @@ const SidebarChats = styled.div`
         opacity:1;
         transition:all 0.34s linear;
     }
+
 `;
 
 const ToggleButton = styled.button`

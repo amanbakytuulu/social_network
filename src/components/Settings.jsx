@@ -9,6 +9,10 @@ import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import { auth } from '../firebase';
 
+import avatar from '../assets/images/avatar1.png'
+import SettingDetail from './SettingLayout';
+import { NavLink } from 'react-router-dom';
+
 function Settings() {
 
   function signOut() {
@@ -28,31 +32,31 @@ function Settings() {
               Общие
             </p>
             <ul className="menu-list">
-              <li><a><SidebarRow Icon={ManageAccountsOutlinedIcon} title="Информация об аккаунте" bg_gradient={"btn-round-md bg-sky-gradient"} />
+              <li><NavLink to="info-account"><SidebarRow Icon={ManageAccountsOutlinedIcon} title="Информация об аккаунте" bg_gradient={"btn-round-md bg-sky-gradient"} />
                 <span class="icon has-text-grey-light	 mr-2">
                   <ArrowForwardIosOutlinedIcon fontSize='middle' />
                 </span>
-              </a></li>
-              <li><a><SidebarRow Icon={FmdGoodOutlinedIcon} title="Информация об адресе" bg_gradient={"btn-round-md bg-yellow-gradient"} />
+              </NavLink></li>
+              <li><NavLink to="address-info"><SidebarRow Icon={FmdGoodOutlinedIcon} title="Информация об адресе" bg_gradient={"btn-round-md bg-yellow-gradient"} />
                 <span class="icon has-text-grey-light mr-2">
                   <ArrowForwardIosOutlinedIcon fontSize='middle' />
                 </span>
-              </a></li>
-              <li><a><SidebarRow Icon={CellTowerOutlinedIcon} title="Социальные сети" bg_gradient={"btn-round-md bg-orange-gradient"} />
+              </NavLink></li>
+              <li><NavLink to="social-info"><SidebarRow Icon={CellTowerOutlinedIcon} title="Социальные сети" bg_gradient={"btn-round-md bg-orange-gradient"} />
                 <span class="icon has-text-grey-light mr-2">
                   <ArrowForwardIosOutlinedIcon fontSize='middle' />
                 </span>
-              </a></li>
+              </NavLink></li>
             </ul>
             <p className="menu-label">
               Аккаунт
             </p>
             <ul className="menu-list">
-              <li><a><SidebarRow Icon={LockOpenOutlinedIcon} title="Изменить пароль" bg_gradient={"btn-round-md bg-blue-gradient"} />
+              <li><NavLink to="change-password"><SidebarRow Icon={LockOpenOutlinedIcon} title="Изменить пароль" bg_gradient={"btn-round-md bg-blue-gradient"} />
                 <span class="icon has-text-grey-light mr-2">
                   <ArrowForwardIosOutlinedIcon fontSize='middle' />
                 </span>
-              </a></li>
+              </NavLink></li>
             </ul>
             <p className="menu-label">
               Другие

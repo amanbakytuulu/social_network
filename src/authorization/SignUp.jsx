@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+    getFirestore,
+    query,
+    getDocs,
+    collection,
+    where,
+    addDoc,
+} from "firebase/firestore";
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import firebase from './../firebase';
+import firebase, { firestore } from './../firebase';
 import { useError } from './../hooks/useError';
 
 function SignUp() {
@@ -21,7 +29,7 @@ function SignUp() {
         event.preventDefault();
         const auth = getAuth();
         setLoading(true);
-        await createUserWithEmailAndPassword(auth, email, password)
+        const res = await createUserWithEmailAndPassword(auth, email, password)
             .then((res) => {
                 const user = firebase.auth().currentUser;
                 return user.updateProfile({
@@ -43,6 +51,13 @@ function SignUp() {
                         setError('');
                 }
             });
+        const user = res.user;
+        await addDoc(collection(firestore, "users"), {
+            uid: user.uid,
+            name: user.displayName,
+            authProvider: "local",
+            email,
+        });
         setLoading(false);
 
     }

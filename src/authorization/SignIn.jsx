@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { getAuth, signInWithPopup, signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import {
+    getFirestore,
+    query,
+    getDocs,
+    collection,
+    where,
+    addDoc,
+} from "firebase/firestore";
 import { Navigate, NavLink, useLocation } from 'react-router-dom';
 import Google from "../assets/images/google.png";
 import Facebook from "../assets/images/facebook.png";
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import Loader from './../components/Loader/Loader';
 import { useError } from './../hooks/useError';
+import { firestore } from '../firebase';
 
 
 function SignIn() {
@@ -43,16 +51,26 @@ function SignIn() {
         })
     }
 
-
-    const onAuthGoogle = () => {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                console.log(result.user);
-            }).catch((error) => {
-                console.log(error);
-            })
-    }
+    const signInWithGoogle = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            const res = await signInWithPopup(auth, provider);
+            const user = res.user;
+            const q = query(collection(firestore, "users"), where("uid", "==", user.uid));
+            const docs = await getDocs(q);
+            if (docs.docs.length === 0) {
+                await addDoc(collection(firestore, "users"), {
+                    uid: user.uid,
+                    name: user.displayName,
+                    authProvider: "google",
+                    email: user.email,
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        }
+    };
 
     const onAuthFacebook = () => {
         const provider = new FacebookAuthProvider();
@@ -90,7 +108,7 @@ function SignIn() {
             <p>Не зарегистрированы? <NavLink to="/login/signUp">Создать аккаунт</NavLink><br />
                 или авторизуйтесь через другие соц.сети</p>
             <div style={{ marginTop: '15px' }}></div>
-            <button type="button" className="btn__google" onClick={onAuthGoogle}><img src={Google} alt="google" /> Войдите в систему с помощью Google</button>
+            <button type="button" className="btn__google" onClick={signInWithGoogle}><img src={Google} alt="google" /> Войдите в систему с помощью Google</button>
             <button type="button" className="btn__facebook" onClick={onAuthFacebook}><img src={Facebook} alt="facebook" /> Войдите в систему с помощью Facebook</button>
         </form>
 

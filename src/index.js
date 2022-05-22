@@ -17,6 +17,10 @@ import ResetPassword from './authorization/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Settings from './components/Settings';
+import AccountDetails from './components/AccountDetails';
+import AddressDetails from './components/AddressDetails';
+import SocialDetails from './components/SocialDetails';
+import PasswordDetails from './components/PasswordDetails';
 
 ReactDOM.render(
   <BrowserRouter>
@@ -25,7 +29,11 @@ ReactDOM.render(
         <Route path="/" element={<App />}>
           <Route index element={<Feed />} />
           <Route path="chat" element={<Message />} />
-          <Route path="setting" element={<Settings />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="settings/info-account" element={<AccountDetails />} />
+          <Route path="settings/address-info" element={<AddressDetails />} />
+          <Route path="settings/social-info" element={<SocialDetails />} />
+          <Route path="settings/change-password" element={<PasswordDetails />} />
         </Route>
         <Route path="/login" element={<Login />}>
           <Route path="signIn" element={<SignIn />} />

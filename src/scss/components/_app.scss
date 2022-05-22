@@ -3,8 +3,9 @@
         background: var(--bg-color);
         display: flex;
         flex-direction: column;
-        margin-top: 90px;
+        padding-top: 90px;
         width: 100%;
         overflow-y: hidden;
+        height: 100vh;
     }
 }
