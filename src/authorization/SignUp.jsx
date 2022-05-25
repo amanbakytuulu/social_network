@@ -32,6 +32,7 @@ function SignUp() {
         const res = await createUserWithEmailAndPassword(auth, email, password)
             .then((res) => {
                 const user = firebase.auth().currentUser;
+                setLoading(false);
                 return user.updateProfile({
                     displayName: userName
                 })
@@ -39,7 +40,7 @@ function SignUp() {
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-
+                
                 switch (errorCode) {
                     case 'auth/invalid-email':
                         setError('Некоректный email');
@@ -50,6 +51,7 @@ function SignUp() {
                     default:
                         setError('');
                 }
+                setLoading(false);
             });
         const user = res.user;
         await addDoc(collection(firestore, "users"), {
@@ -58,8 +60,6 @@ function SignUp() {
             authProvider: "local",
             email,
         });
-        setLoading(false);
-
     }
 
     return (

@@ -21,6 +21,8 @@ function SignIn() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isEmptyEmail, setIsEmptyEmail] = useState(false);
+    const [isEmptyPassword, setIsEmptyPassword] = useState(false);
     const { error, setError } = useError();
     const [loading, setLoading] = useState(false);
 
@@ -30,19 +32,32 @@ function SignIn() {
         e.preventDefault();
         setLoading(true);
 
+        if (email.length == '' || password.length == '') {
+            setLoading(false);
+            setIsEmptyEmail(true);
+            setIsEmptyPassword(true);
+            return setError('Поля не могут быть пустыми');
+        }
+
         await signInWithEmailAndPassword(auth, email, password).then((user) => {
             console.log(user.user);
             setLoading(false);
             setError('');
+            setIsEmptyEmail(false);
+            setIsEmptyPassword(false);
 
         }).catch((error) => {
             const errorCode = error.code;
             setLoading(false);
+            setIsEmptyEmail(false);
+            setIsEmptyPassword(false);
             switch (errorCode) {
                 case 'auth/user-not-found':
                 case 'auth/wrong-password':
-                case 'auth/invalid-email':
                     setError('Неверный логин или пароль');
+                    break;
+                case 'auth/invalid-email':
+                    setError('Некорректный email');
                     break;
                 default:
                     setError('');
@@ -88,11 +103,11 @@ function SignIn() {
             <h1>Авторизация</h1>
             <div className="signIn__input">
                 <MailOutlineIcon className="signIn__icon" />
-                <input type="text" id="email" placeholder="Your email address" onChange={(e) => setEmail(e.target.value)} required />
+                <input type="text" id="email" style={{ border: `${isEmptyEmail ? '1px solid red' : ''}` }} placeholder="Your email address" onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="signIn__input">
                 <LockOpenIcon className="signIn__icon" />
-                <input type="password" id="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required />
+                <input type="password" id="password" style={{ border: `${isEmptyPassword ? '1px solid red' : ''}` }} placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div style={{ color: 'red' }}>{error && error}</div>
             <div className="signIn__save" style={{ marginBottom: '5px' }}>

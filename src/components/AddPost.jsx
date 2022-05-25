@@ -26,6 +26,8 @@ function AddPost() {
         const promises = [];
         let uploadTask = null;
 
+
+        console.log(promises);
         if (images == null || images.length == 0) {
             return toast.warning("Загрузите фото или видео!");
         }

@@ -17,10 +17,10 @@ import ResetPassword from './authorization/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Settings from './components/Settings';
-import AccountDetails from './components/AccountDetails';
-import AddressDetails from './components/AddressDetails';
-import SocialDetails from './components/SocialDetails';
-import PasswordDetails from './components/PasswordDetails';
+import AccountDetails from './components/Details/AccountDetails';
+import AddressDetails from './components/Details/AddressDetails';
+import SocialDetails from './components/Details/SocialDetails';
+import PasswordDetails from './components/Details/PasswordDetails';
 
 ReactDOM.render(
   <BrowserRouter>

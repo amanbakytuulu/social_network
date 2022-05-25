@@ -1,6 +1,6 @@
 import React from 'react'
-import SettingLayout from './SettingLayout'
-import avatar from '../assets/images/avatar1.png';
+import SettingLayout from '../SettingLayout'
+import avatar from '../../assets/images/avatar1.png';
 import { getAuth } from 'firebase/auth';
 
 function PasswordDetails() {
