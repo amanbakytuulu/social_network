@@ -7,6 +7,7 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from 'react-image-gallery';
 import firebase from './../../firebase';
+import { Avatar } from '@mui/material';
 
 function PostDetail({ doc, postik, comments, active, setActive }) {
 
@@ -64,7 +65,12 @@ function PostDetail({ doc, postik, comments, active, setActive }) {
                                     return (
                                         <div className="modal__comment">
                                             <div className="modal__image image is-32x32">
-                                                <img src={comment.photoURL} className="is-rounded" alt="" />
+                                                {
+                                                    comment.photoURL ?
+                                                        <img src={comment.photoURL} className="is-rounded" alt="xxx" />
+                                                        :
+                                                        <Avatar src="" sx={{ width: 35, height: 35 }} />
+                                                }
                                             </div>
                                             <div className="modal__description">
                                                 <p className="mb-2">

@@ -60,7 +60,11 @@
                         & .modal__image {
                             align-self: flex-start;
                             margin-top: 12px;
-                            min-width: 35px;
+
+                            & img {
+                                min-width: 35px;
+                                min-height: 35px;
+                            }
                         }
 
                         & .modal__description {

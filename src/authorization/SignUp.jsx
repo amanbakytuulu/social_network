@@ -53,7 +53,7 @@ function SignUp() {
                 }
                 setLoading(false);
             });
-        const user = res.user;
+        const user = res?.user;
         await addDoc(collection(firestore, "users"), {
             uid: user.uid,
             name: user.displayName,
