@@ -8,7 +8,7 @@
     & .feed__body {
         display: flex;
         flex-direction: column;
-        max-width: 600px;
+        max-width: 630px;
         margin: 0 auto;
         flex-wrap: wrap;
         
@@ -44,5 +44,17 @@
     
     &::-webkit-scrollbar{
         display: none;
+    }
+}
+
+
+@media screen and (max-width:450px) {
+    .feed{
+
+        & .feed__body{
+            margin:0px;
+            width: 100%;
+            flex-wrap: inherit;
+        }
     }
 }

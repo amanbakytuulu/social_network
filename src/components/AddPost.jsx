@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Avatar } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
 import GifBoxIcon from '@mui/icons-material/GifBox';
@@ -11,107 +11,186 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { ThemeContext } from '../ThemeContext';
 import { themes } from './../ThemeContext';
 import firebase from './../firebase';
-
 import { toast } from 'react-toastify';
+import Picker from 'emoji-picker-react';
+
 
 function AddPost() {
     const [user] = useAuthState(auth);
     const { theme } = useState(ThemeContext);
     const [value, setValue] = useState('');
     const [images, setImages] = useState([]);
+    const [previewImg, setPreviewImg] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [showSmile, setShowSmile] = useState(false);
+
+    const onHandleChangeImage = (files) => {
+        setPreviewImg([]);
+
+        for (let i = 0; i < files.length; i++) {
+            if (files[i]?.type.indexOf('image') === -1) {
+                setImages([]);
+                return toast.error('Только изображения!')
+            }
+        }
+
+        for (let j = 0, f; f = files[j]; j++) {
+            const FReader = new FileReader();
+
+            FReader.onload = (function (theFile) {
+                return function (e) {
+                    setPreviewImg((prev) => [...prev, e.target.result.split(' ')]);
+                };
+            })(f);
+            // Read in the image file as a data URL.
+            FReader.readAsDataURL(f);
+
+        }
+        setImages(files);
+
+    }
+
 
     const onSend = async (e) => {
         e.preventDefault();
-        const promises = [];
-        let uploadTask = null;
 
-
-        console.log(promises);
         if (images == null || images.length == 0) {
             return toast.warning("Загрузите фото или видео!");
         }
 
+        const promises = [];
+
         if (images) {
             setLoading(true);
+            const storageRef = storage.ref();
+
             for (let i = 0; i < images.length; i++) {
+                console.log(i);
+                const uploadTask = storageRef.child('assets/images/' + images[i].name).put(images[i]);
 
-                const storageRef = storage.ref();
-
-                let metadata = {
-                    contentType: 'image/jpeg',
-                };
-                const nameTime = +new Date() + '.jpg'
-                uploadTask = storageRef.child('assets/images/' + nameTime).put(images[i], metadata);
                 promises.push(
                     uploadTask
-                        .then(snapshot =>
-                            snapshot.ref.getDownloadURL()
-                        )
+                        .then(snapshot => {
+                            return snapshot.ref.getDownloadURL()
+                        })
+                        .catch((error) => toast.error(error.message))
                 )
             }
 
-            const URLs = await Promise.all(promises)
+
+            const URLs = await Promise.all(promises);
+
+            await firestore.collection('posts').add({
+                uid: user.uid,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                email: user.email,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                text: value,
+                img: URLs
+            })
+                .then((docRef) => {
+                    toast.success('Новый пост добавлен!')
+                }).catch((error) => toast.error(error.message))
+
             setLoading(false);
 
-            uploadTask.on("state_changed", (snapshot) => {
-                let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-                (error) => {
-                    switch (error) {
-                        case 'storage/unauthorized':
-                            console.log('User not authorization');
-                            break;
-                        case 'storage/cancelled':
-                            console.log('Upload was cancelled');
-                            break;
-                        case 'storage/unknown':
-                            console.log(error.message);
-                            break;
-                    }
-                }, () => {
-                    firestore.collection('posts').add({
-                        uid: user.uid,
-                        displayName: user.displayName,
-                        photoURL: user.photoURL,
-                        email: user.email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        text: value,
-                        img: URLs
-                    })
-                    .then((docRef)=>{
-                        firestore.collection('posts').doc(docRef.id).update({doc:docRef.id});
-                        toast.success('Новый пост добавлен!')
-                    })
-                });
+
+            // setLoading(false);
+            // uploadTask.on("state_changed", (snapshot) => {
+            //     let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            // },
+            //     (error) => {
+            //         switch (error) {
+            //             case 'storage/unauthorized':
+            //                 console.log('User not authorization');
+            //                 break;
+            //             case 'storage/cancelled':
+            //                 console.log('Upload was cancelled');
+            //                 break;
+            //             case 'storage/unknown':
+            //                 console.log(error.message);
+            //                 break;
+            //         }
+            //     }, () => {
+            //         firestore.collection('posts').add({
+            //             uid: user.uid,
+            //             displayName: user.displayName,
+            //             photoURL: user.photoURL,
+            //             email: user.email,
+            //             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            //             text: value,
+            //             img: URLs
+            //         })
+            //             .then((docRef) => {
+            //                 toast.success('Новый пост добавлен!')
+            //             }).catch((error) => toast.error(error.message))
+            //     });
             setValue('');
-            setImages(null);
+            setImages([]);
+            setPreviewImg([]);
         }
     }
+
+    const onKeyDown = (e) => {
+        if (e.which == 13) {
+            onSend(e);
+        }
+    }
+    const onEmojiClick = (event, emojiObject) => {
+        setValue((prev) => (prev.concat(emojiObject.emoji)));
+    };
+
+    const onShowSmile = () => {
+        setShowSmile(!showSmile);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            setShowSmile(false);
+        }
+        return;
+    })
 
     return (
         <form className="addPost" onSubmit={onSend}>
             <div className="addPost__title">
                 <DriveFileRenameOutlineIcon className="addPost__icon" />
-                <p style={{pointerEvents:'none'}}>Создать пост</p>
+                <p style={{ pointerEvents: 'none' }}>Создать пост</p>
             </div>
             <div className="addPost__info">
                 <Avatar className="addPost__avatar" src={user.photoURL} />
-                <textarea placeholder="Описание..." rows="5" cols="45" className={`addPost__input ${theme == themes.dark ? 'is-darkness-container' : ''}`} value={value} onChange={(e) => setValue(e.target.value)} ></textarea>
+                <textarea placeholder="Описание..." onKeyDown={onKeyDown} rows="5" cols="45"
+                    className={`addPost__input ${theme == themes.dark ? 'is-darkness-container' : ''}`}
+                    value={value} onChange={(e) => setValue(e.target.value)} ></textarea>
+            </div>
+            <div>
+                {previewImg && previewImg.map((img, index) =>
+                    <img key={String(index + img)} src={img} alt={img} style={{ margin: '3px 1.5px 0px', maxHeight: '75px', maxWidth: '75px' }} />
+                )}
             </div>
             <div className="addPost__options">
                 <div className="addPost__left">
                     <div className="addPost__option">
-                        <input type="file" id="option1" onChange={(e) => setImages(e.target.files)} multiple />
-                        <label htmlFor="option1"><PhotoIcon className="addPost__icon" style={{ color: '#2563EB' }} /> </label>
+                        <input type="file" id="option1" onChange={(e) => onHandleChangeImage(e.target.files)} accept="image/*" multiple />
+                        <label htmlFor="option1"><PhotoIcon className="addPost__icon" style={{ color: '#2563EB' }} />Фото/Видео </label>
                     </div>
-                    <div className="addPost__option">
-                        <input type="file" id="option2" />
+                    {/* <div className="addPost__option">
                         <label htmlFor="option2"><GifBoxIcon className="addPost__icon" style={{ color: '#059669' }} /> </label>
-                    </div>
-                    <div className="addPost__option">
-                        <input type="file" id="option3" />
-                        <label htmlFor="option3"><SentimentVerySatisfiedIcon className="addPost__icon" style={{ color: '#ff0000' }} /></label>
+                    </div> */}
+                    <div className="addPost__option"
+                        style={{ position: 'relative' }}>
+                        <label htmlFor="option3" onClick={onShowSmile}><SentimentVerySatisfiedIcon className="addPost__icon" style={{ color: 'orange' }} />Смайлики</label>
+                        {showSmile ?
+                            <div style={{ position: 'absolute', zIndex: 50 }}>
+                                <Picker
+                                    onEmojiClick={onEmojiClick}
+                                    disableAutoFocus={true}
+                                    pickerStyle={{ boxShadow: 'none' }}
+                                    groupNames={{ smileys_people: 'PEOPLE' }}
+                                />
+                            </div>
+                            : ''}
                     </div>
                 </div>
                 <div className="addPost__right">

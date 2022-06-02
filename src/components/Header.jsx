@@ -23,7 +23,6 @@ function Header({ setActive, active }) {
 
     }, [darkMode])
 
-
     return (
         <nav style={{ zIndex: '150' }} className={`navbar has-shadows is-spaced is-fixed-top ${darkMode ? 'is-darkness-container' : 'is-white'}`} role="navigation" aria-label="main navigation">
             <div className="navbar-brand">

@@ -93,7 +93,7 @@ const StyledWrap = styled.div`
 
 const Title = styled.h4`
     margin-top: 15px;
-    margin-bottom: 7px;
+    margin-bottom: 15px;
     font-size: 0.7rem;
     font-weight: 500;
     color: #adb5bd;

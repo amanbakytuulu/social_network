@@ -12,13 +12,26 @@ function Feed() {
 
     const [posts, setPosts] = useState([]);
 
-    const [post, loading] = useCollectionData(
-        firestore.collection("posts").orderBy("createdAt", "desc")
-    );
+    // const [datas, loading] = useCollectionData(
+    //     firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot)=>{
+    //         return snapshot.docs.map((snapshot)=>snapshot.id)
+    //     })
+    // );
 
     useEffect(() => {
-        setPosts(post);
-    }, [post])
+        let unsubscribe;
+
+        unsubscribe = firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => (
+            setPosts(snapshot.docs.map((doc) => ({
+                doc: doc.id,
+                post: doc.data()
+            })))
+        ));
+
+        return ()=>{
+            unsubscribe();
+        }
+    }, [])
 
 
     const stories = [
@@ -64,9 +77,9 @@ function Feed() {
             </div> */}
             <div className="feed__body">
                 <AddPost />
-                {
+                {/* {
                     loading && <div style={{ margin: '0 auto' }}><Loader /></div>
-                }
+                } */}
                 {posts &&
                     posts.map((post, index) => {
                         return (

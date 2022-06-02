@@ -17,8 +17,9 @@ function Sidebar({ setActive, active }) {
             <div className="sidebar__panels">
                 <div className="sidebar__panel">
                     <h3>Страницы</h3>
-
-                    <SidebarRow Icon={FeedIcon} title="Новости" bg_gradient="btn-round-md bg-blue-gradient" setActive={setActive} />
+                    <NavLink to="/">
+                        <SidebarRow Icon={FeedIcon} title="Новости" bg_gradient="btn-round-md bg-blue-gradient" setActive={setActive} />
+                    </NavLink>
                     <SidebarRow Icon={ExploreIcon} title="Explore" bg_gradient="btn-round-md bg-orange-gradient" setActive={setActive} />
                     <SidebarRow Icon={FlagIcon} title="Explore Stories" bg_gradient="btn-round-md bg-yellow-gradient" setActive={setActive} />
                     <NavLink to="chat">
