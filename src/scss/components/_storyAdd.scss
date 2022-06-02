@@ -1,5 +1,5 @@
 .storyAdd{
-    background: #343a40 ;
+    background: var(--bg-addStory);
     position: relative;
     min-width: 130px;
     min-height: 170px;
@@ -7,6 +7,19 @@
     border-radius: 10px;
     margin-bottom:5px;
     overflow: hidden;
+
+    & .storyAdd__icon{
+        position: absolute;
+        bottom:40px;
+        background-color: rgb(255, 255, 255);
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        left:calc(50% - 15%);
+        padding-left: 10px;
+        padding-top: 10px;
+        color:rgb(29, 143, 236);
+    }
 
     // &::before{
     //     content:"+";

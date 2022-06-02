@@ -7,9 +7,9 @@
 
     & .sidebarRow__icon {
         font-size: 1.9rem;
-        
+
         &.btn-round-md {
-            padding:11px;
+            padding: 11px;
             color: #fff;
             top: 0px;
             position: relative;
@@ -40,10 +40,9 @@
 
     & .sidebarRow__title {
         font-size: 0.95rem;
-        margin-left: 0.90rem;
+        margin-left: 0.9rem;
         font-weight: 600 !important;
-        color:var(--second-color)
-
+        color: var(--second-color);
     }
     &:hover {
         background-color: rgba(179, 174, 174, 0.13);
@@ -55,6 +54,7 @@
         color: #000;
     }
     .dark-theme &:hover .sidebarRow__title {
+        font-family: "Roboto", sans-serif;
         color: #fff;
     }
 }

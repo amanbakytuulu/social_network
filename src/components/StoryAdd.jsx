@@ -1,10 +1,12 @@
 import React from 'react';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-function StoryAdd({title}) {
+import AddIcon from '@mui/icons-material/Add';
+
+function StoryAdd({ title }) {
     return (
         <div className="storyAdd">
-            <AddCircleIcon style={{fontSize:'40px',color:'white',position:'absolute', bottom:'35px', left:'45px'}}/>
+            <div className="storyAdd__icon" >
+                <AddIcon fontSize="medium" />
+            </div>
             <h4>{title}</h4>
         </div>
     )
