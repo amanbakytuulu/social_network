@@ -33,6 +33,12 @@
     cursor: pointer;
 }
 
+.navbar-item img,
+.image img {
+    max-height: -webkit-fill-available;
+    height: inherit;
+}
+
 .navbar-end .control .input {
     width: 550px;
     border: none;

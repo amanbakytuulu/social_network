@@ -13,6 +13,7 @@ import { themes } from './../ThemeContext';
 import firebase from './../firebase';
 import { toast } from 'react-toastify';
 import Picker from 'emoji-picker-react';
+import { useLoading } from './../hooks/useLoading';
 
 
 function AddPost() {
@@ -21,8 +22,8 @@ function AddPost() {
     const [value, setValue] = useState('');
     const [images, setImages] = useState([]);
     const [previewImg, setPreviewImg] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [showSmile, setShowSmile] = useState(false);
+    const { loading, setLoading } = useLoading();
 
     const onHandleChangeImage = (files) => {
         setPreviewImg([]);
@@ -65,7 +66,6 @@ function AddPost() {
             const storageRef = storage.ref();
 
             for (let i = 0; i < images.length; i++) {
-                console.log(i);
                 const uploadTask = storageRef.child('assets/images/' + images[i].name).put(images[i]);
 
                 promises.push(
@@ -87,7 +87,9 @@ function AddPost() {
                 email: user.email,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 text: value,
-                img: URLs
+                img: URLs,
+                like: false,
+                countLikes: 0
             })
                 .then((docRef) => {
                     toast.success('Новый пост добавлен!')

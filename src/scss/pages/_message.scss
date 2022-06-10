@@ -173,11 +173,13 @@
         z-index: 10;
 
         & input {
+            outline-color: var(--border-color);
             border-radius: 50px;
             flex: 0.67;
             margin: 0px 5px;
             padding: 0px 15px;
             font-size: 16px;
+            border:none;
         }
         & button {
             border-radius: 50%;

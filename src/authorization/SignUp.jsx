@@ -29,18 +29,38 @@ function SignUp() {
         event.preventDefault();
         const auth = getAuth();
         setLoading(true);
-        const res = await createUserWithEmailAndPassword(auth, email, password)
+        await createUserWithEmailAndPassword(auth, email, password)
             .then((res) => {
                 const user = firebase.auth().currentUser;
                 setLoading(false);
                 return user.updateProfile({
                     displayName: userName
                 })
+
+            }).then(() => {
+                const user = firebase.auth().currentUser;
+
+                addDoc(collection(firestore, "users"), {
+                    uid: user.uid,
+                    name: user.displayName,
+                    authProvider: "local",
+                    email,
+                    lastName: '',
+                    phone: '',
+                    about: '',
+                    location: {
+                        country: '',
+                        city: '',
+                        address: '',
+                        pin: ''
+                    }
+
+                });
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                
+
                 switch (errorCode) {
                     case 'auth/invalid-email':
                         setError('Некоректный email');
@@ -52,14 +72,7 @@ function SignUp() {
                         setError('');
                 }
                 setLoading(false);
-            });
-        const user = res?.user;
-        await addDoc(collection(firestore, "users"), {
-            uid: user.uid,
-            name: user.displayName,
-            authProvider: "local",
-            email,
-        });
+            })
     }
 
     return (

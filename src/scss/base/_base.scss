@@ -55,3 +55,7 @@ body {
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
+
+input.is-danger {
+  border-color: #f14668 !important;
+}

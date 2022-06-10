@@ -5,8 +5,6 @@ import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
-import ReactElasticCarousel from 'react-elastic-carousel';
-import { Circle } from '@mui/icons-material';
 import { firestore } from '../firebase';
 import { toast } from 'react-toastify';
 import { getAuth } from 'firebase/auth';
@@ -17,16 +15,20 @@ import ImageGallery from "react-image-gallery";
 
 function Post({ post, doc }) {
 
-    const { displayName, createdAt, photoURL, img, text, uid } = post;
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    const { displayName, createdAt, photoURL, img, text, uid, likes } = post;
 
     const [show, setShow] = useState(false);
     const [title, setTitle] = useState(text);
     const [edit, setEdit] = useState(false);
     const [active, setActive] = useState(false);
     const [comments, setComments] = useState([]);
+    const [like, setLikes] = useState(likes);
+    const [isLike, setIsLike] = useState(likes.includes(user.uid));
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+
 
     useEffect(() => {
         let unsubscribe;
@@ -34,13 +36,27 @@ function Post({ post, doc }) {
         unsubscribe = firestore.collection('posts').doc(doc)
             .collection('comments').orderBy('timestamp', 'desc')
             .onSnapshot((snapshot) => {
-                setComments(snapshot.docs.map((doc) => doc.data()))
+                setComments(snapshot.docs.map((doc) => ({
+                    doc: doc.id,
+                    datas: doc.data()
+                })))
             })
 
-        return () => {
-            unsubscribe();
-        }
-    }, [comments])
+        return () => unsubscribe();
+    }, [])
+
+    useEffect(() => {
+        firestore.collection('posts').doc(doc).update({
+            likes: like
+        })
+
+    }, [isLike])
+
+    const onHandleClickLike = () => {
+        setIsLike(!isLike);
+        setLikes((prev) => prev.length === 0 && !isLike ? prev : !isLike ? prev.concat(user.uid) : prev.filter((num) => num != user.uid));
+
+    }
 
     document.addEventListener('keydown', ({ key }) => {
         if (key == 'Escape') {
@@ -56,6 +72,7 @@ function Post({ post, doc }) {
                 .catch((error) => toast.error(error.message))
         }
     }
+
 
     return (
         <div className="post">
@@ -129,8 +146,9 @@ function Post({ post, doc }) {
             <div className="post__bottom mt-2">
                 <div className="post__left">
                     <div className="post__option">
-                        <div>
-                            <ThumbUpIcon className="post__icon" fontSize="small" /> <strong>Лайк <span>(27)</span></strong>
+                        <div onClick={onHandleClickLike}>
+                            <ThumbUpIcon className="post__icon" fontSize="small" style={isLike ? { color: '#df3434' } : {}} /> <strong style={isLike ? { color: 'var(--title-color' }
+                                : {}}>Лайк <span>({like.length})</span></strong>
                         </div>
                         <div onClick={() => setActive(true)}>
                             <MapsUgcOutlinedIcon className="post__icon" fontSize="medium" /> <strong>Коммент <span>({comments.length})</span></strong>

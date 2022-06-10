@@ -9,7 +9,6 @@ function ResetPassword() {
 
     const auth = getAuth();
 
-
     const sendPasswordReset = async (e) => {
         e.preventDefault();
         try {

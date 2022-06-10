@@ -1,6 +1,6 @@
 import React from 'react'
 import { firestore } from '../../firebase'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import avatar from '../../assets/i.jpg';
 import { getAuth } from 'firebase/auth';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
@@ -61,24 +61,24 @@ function PostDetail({ doc, postik, comments, active, setActive }) {
                         <div className="modal__comments ">
                             {
                                 comments &&
-                                comments.map((comment) => {
+                                comments.map(({datas},index) => {
                                     return (
-                                        <div className="modal__comment">
+                                        <div key={index + Math.random()} className="modal__comment">
                                             <div className="modal__image image is-32x32">
                                                 {
-                                                    comment.photoURL ?
-                                                        <img src={comment.photoURL} className="is-rounded" alt="xxx" />
+                                                    datas.photoURL ?
+                                                        <img src={datas.photoURL} className="is-rounded" alt="xxx" />
                                                         :
                                                         <Avatar src="" sx={{ width: 35, height: 35 }} />
                                                 }
                                             </div>
                                             <div className="modal__description">
                                                 <p className="mb-2">
-                                                    <a href="#" className="mr-0"><strong>{comment?.userName} - </strong></a>
-                                                    {comment.text}
+                                                    <a href="#" className="mr-0"><strong>{datas?.userName} - </strong></a>
+                                                    {datas.text}
                                                 </p>
                                                 <p className="is-size-7 mt-0 modal__time">
-                                                    {new Date(comment.timestamp?.toDate()).toUTCString()}
+                                                    {new Date(datas.timestamp?.toDate()).toUTCString()}
                                                 </p>
                                             </div>
                                         </div>
@@ -104,4 +104,4 @@ function PostDetail({ doc, postik, comments, active, setActive }) {
     )
 }
 
-export default PostDetail
+export default memo(PostDetail)

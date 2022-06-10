@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import StoryWheel from '../../components/StoryWheel';
 import AddPost from '../../components/AddPost';
 import Post from '../../components/Post';
@@ -7,10 +7,12 @@ import { firestore } from '../../firebase';
 import Loader from '../../components/Loader/Loader';
 import Stories from 'react-insta-stories';
 import avatar from '../../assets/15sec.mp4'
+import { useLoading } from './../../hooks/useLoading';
 
 function Feed() {
 
     const [posts, setPosts] = useState([]);
+    const { loading, setLoading } = useLoading();
 
     // const [datas, loading] = useCollectionData(
     //     firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot)=>{
@@ -18,21 +20,21 @@ function Feed() {
     //     })
     // );
 
-    useEffect(() => {
+    useEffect(async () => {
         let unsubscribe;
+        setLoading(true);
+        unsubscribe = await firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            setLoading(false);
+            setPosts(snapshot.docs.map((doc) => {
+                return {
+                    doc: doc.id,
+                    post: doc.data()
+                }
+            }))
+        })
 
-        unsubscribe = firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => (
-            setPosts(snapshot.docs.map((doc) => ({
-                doc: doc.id,
-                post: doc.data()
-            })))
-        ));
-
-        return ()=>{
-            unsubscribe();
-        }
+        return () => unsubscribe();
     }, [])
-
 
     const stories = [
         {
@@ -77,9 +79,9 @@ function Feed() {
             </div> */}
             <div className="feed__body">
                 <AddPost />
-                {/* {
+                {
                     loading && <div style={{ margin: '0 auto' }}><Loader /></div>
-                } */}
+                }
                 {posts &&
                     posts.map((post, index) => {
                         return (
@@ -92,4 +94,4 @@ function Feed() {
     )
 }
 
-export default Feed
+export default memo(Feed);

@@ -77,9 +77,7 @@ function Header({ setActive, active }) {
                     </div>
                     <div className="navbar-item">
                         <NavLink to="/settings">
-                            <span className="image">
-                                <Avatar src={user?.photoURL} />
-                            </span>
+                            <Avatar src={user?.photoURL} alt="photo"/>
                         </NavLink>
                     </div>
                 </div>

@@ -40,7 +40,6 @@ function SignIn() {
         }
 
         await signInWithEmailAndPassword(auth, email, password).then((user) => {
-            console.log(user.user);
             setLoading(false);
             setError('');
             setIsEmptyEmail(false);
@@ -79,6 +78,15 @@ function SignIn() {
                     name: user.displayName,
                     authProvider: "google",
                     email: user.email,
+                    lastName: '',
+                    phone: '',
+                    about: '',
+                    location: {
+                        country: '',
+                        city: '',
+                        address: '',
+                        pin: ''
+                    }
                 });
             }
         } catch (err) {
