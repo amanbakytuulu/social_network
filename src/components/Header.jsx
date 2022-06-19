@@ -9,14 +9,14 @@ import { Avatar } from '@mui/material';
 import { auth } from '../firebase';
 import Notifications from './Notifications';
 import { NavLink } from 'react-router-dom';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useSelector } from 'react-redux';
 
 function Header({ setActive, active }) {
 
     const { theme, changeTheme } = useContext(ThemeContext);
     const [darkMode, setDarkMode] = useState(theme === themes.dark ? true : false);
     const [showNotification, setShowNotification] = useState(false)
-    const [user] = useAuthState(auth);
+    const { currentUser } = useSelector((state) => state.users);
 
     useEffect(() => {
         changeTheme(darkMode ? themes.dark : themes.light)
@@ -77,7 +77,7 @@ function Header({ setActive, active }) {
                     </div>
                     <div className="navbar-item">
                         <NavLink to="/settings">
-                            <Avatar src={user?.photoURL} alt="photo"/>
+                            <Avatar src={currentUser?.currentUser.photoURL} alt="photo" />
                         </NavLink>
                     </div>
                 </div>

@@ -1,29 +1,30 @@
 import React, { memo, useState } from 'react';
 import { Avatar } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
-import GifBoxIcon from '@mui/icons-material/GifBox';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { auth, storage } from '../firebase';
-import { firestore } from '../firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { ThemeContext } from '../ThemeContext';
 import { themes } from './../ThemeContext';
-import firebase from './../firebase';
 import { toast } from 'react-toastify';
 import Picker from 'emoji-picker-react';
 import { useLoading } from './../hooks/useLoading';
+import { addNewPost } from '../redux/postSlice';
+import { getAuth } from 'firebase/auth';
+import { useDispatch } from 'react-redux';
 
 
 function AddPost() {
-    const [user] = useAuthState(auth);
+
+    const auth = getAuth();
+    const user = auth.currentUser;
     const { theme } = useState(ThemeContext);
     const [value, setValue] = useState('');
     const [images, setImages] = useState([]);
     const [previewImg, setPreviewImg] = useState([]);
     const [showSmile, setShowSmile] = useState(false);
     const { loading, setLoading } = useLoading();
+    const dispatch = useDispatch();
 
     const onHandleChangeImage = (files) => {
         setPreviewImg([]);
@@ -31,7 +32,7 @@ function AddPost() {
         for (let i = 0; i < files.length; i++) {
             if (files[i]?.type.indexOf('image') === -1) {
                 setImages([]);
-                return toast.error('Только изображения!')
+                return toast.error('Только изображения или видео!')
             }
         }
 
@@ -43,7 +44,6 @@ function AddPost() {
                     setPreviewImg((prev) => [...prev, e.target.result.split(' ')]);
                 };
             })(f);
-            // Read in the image file as a data URL.
             FReader.readAsDataURL(f);
 
         }
@@ -79,55 +79,9 @@ function AddPost() {
 
 
             const URLs = await Promise.all(promises);
-
-            await firestore.collection('posts').add({
-                uid: user.uid,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                email: user.email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                text: value,
-                img: URLs,
-                like: false,
-                countLikes: 0
-            })
-                .then((docRef) => {
-                    toast.success('Новый пост добавлен!')
-                }).catch((error) => toast.error(error.message))
-
+            dispatch(addNewPost({ user, URLs, value }));
             setLoading(false);
-
-
-            // setLoading(false);
-            // uploadTask.on("state_changed", (snapshot) => {
-            //     let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            // },
-            //     (error) => {
-            //         switch (error) {
-            //             case 'storage/unauthorized':
-            //                 console.log('User not authorization');
-            //                 break;
-            //             case 'storage/cancelled':
-            //                 console.log('Upload was cancelled');
-            //                 break;
-            //             case 'storage/unknown':
-            //                 console.log(error.message);
-            //                 break;
-            //         }
-            //     }, () => {
-            //         firestore.collection('posts').add({
-            //             uid: user.uid,
-            //             displayName: user.displayName,
-            //             photoURL: user.photoURL,
-            //             email: user.email,
-            //             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            //             text: value,
-            //             img: URLs
-            //         })
-            //             .then((docRef) => {
-            //                 toast.success('Новый пост добавлен!')
-            //             }).catch((error) => toast.error(error.message))
-            //     });
+            toast.success('Успешно добавлено!');
             setValue('');
             setImages([]);
             setPreviewImg([]);
@@ -177,9 +131,6 @@ function AddPost() {
                         <input type="file" id="option1" onChange={(e) => onHandleChangeImage(e.target.files)} accept="image/*" multiple />
                         <label htmlFor="option1"><PhotoIcon className="addPost__icon" style={{ color: '#2563EB' }} />Фото/Видео </label>
                     </div>
-                    {/* <div className="addPost__option">
-                        <label htmlFor="option2"><GifBoxIcon className="addPost__icon" style={{ color: '#059669' }} /> </label>
-                    </div> */}
                     <div className="addPost__option"
                         style={{ position: 'relative' }}>
                         <label htmlFor="option3" onClick={onShowSmile}><SentimentVerySatisfiedIcon className="addPost__icon" style={{ color: 'orange' }} />Смайлики</label>

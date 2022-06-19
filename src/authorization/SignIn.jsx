@@ -15,9 +15,12 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useError } from './../hooks/useError';
 import { firestore } from '../firebase';
-
+import { addNewUser } from '../redux/userSlice';
+import { useDispatch } from 'react-redux';
 
 function SignIn() {
+
+    const auth = getAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,8 +28,7 @@ function SignIn() {
     const [isEmptyPassword, setIsEmptyPassword] = useState(false);
     const { error, setError } = useError();
     const [loading, setLoading] = useState(false);
-
-    const auth = getAuth();
+    const dispatch = useDispatch();
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -73,21 +75,7 @@ function SignIn() {
             const q = query(collection(firestore, "users"), where("uid", "==", user.uid));
             const docs = await getDocs(q);
             if (docs.docs.length === 0) {
-                await addDoc(collection(firestore, "users"), {
-                    uid: user.uid,
-                    name: user.displayName,
-                    authProvider: "google",
-                    email: user.email,
-                    lastName: '',
-                    phone: '',
-                    about: '',
-                    location: {
-                        country: '',
-                        city: '',
-                        address: '',
-                        pin: ''
-                    }
-                });
+                dispatch(addNewUser(user));
             }
         } catch (err) {
             console.error(err);
@@ -95,14 +83,19 @@ function SignIn() {
         }
     };
 
-    const onAuthFacebook = () => {
-        const provider = new FacebookAuthProvider();
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                console.log(result.user);
-            }).catch((error) => {
-                console.log(error);
-            })
+    const onAuthFacebook = async () => {
+        try {
+            const provider = new FacebookAuthProvider();
+            const res = await signInWithPopup(auth, provider);
+            const user = res.user;
+            const q = query(collection(firestore, "users"), where("uid", "==", user.uid));
+            const docs = await getDocs(q);
+            if (docs.docs.length === 0) {
+                dispatch(addNewUser(user));
+            }
+        } catch (err) {
+            alert(err.message);
+        }
     }
 
 
@@ -127,7 +120,12 @@ function SignIn() {
                     <p>Забыли пароль?</p>
                 </NavLink>
             </div>
-            <button type="submit" style={{ marginTop: '10px' }}>{loading ? 'Подождите...' : 'Войти'}</button>
+            {
+                loading ?
+                    <button type="submit" style={{ marginTop: '10px', background: 'black' }} disabled>Подождите...</button>
+                    :
+                    <button type="submit" style={{ marginTop: '10px' }}>Войти</button>
+            }
             <p>Не зарегистрированы? <NavLink to="/login/signUp">Создать аккаунт</NavLink><br />
                 или авторизуйтесь через другие соц.сети</p>
             <div style={{ marginTop: '15px' }}></div>

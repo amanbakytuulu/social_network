@@ -25,7 +25,9 @@ function Sidebar({ setActive, active }) {
                     <NavLink to="chat">
                         <SidebarRow Icon={ChatBubbleOutlineIcon} title="Сообщения" bg_gradient="btn-round-md bg-red-gradient" setActive={setActive} />
                     </NavLink>
-                    <SidebarRow Icon={PermIdentityIcon} title="Профиль" bg_gradient="btn-round-md bg-sky-gradient" setActive={setActive} />
+                    <NavLink to="profile">
+                        <SidebarRow Icon={PermIdentityIcon} title="Профиль" bg_gradient="btn-round-md bg-sky-gradient" setActive={setActive} />
+                    </NavLink>
                 </div>
                 <div className="sidebar__panel">
                     <h3>Аккаунт</h3>

@@ -5,30 +5,35 @@ import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import { firestore } from '../firebase';
-import { toast } from 'react-toastify';
 import { getAuth } from 'firebase/auth';
 import PostDetail from './Details/PostDetail';
-
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
+import { useSelector, useDispatch } from 'react-redux';
+import { deletePost } from './../redux/postSlice';
+import { toggleSubscribe } from '../redux/userSlice';
+import PostEdit from './PostEdit';
 
 function Post({ post, doc }) {
 
     const auth = getAuth();
     const user = auth.currentUser;
+    const dispatch = useDispatch();
 
-    const { displayName, createdAt, photoURL, img, text, uid, likes } = post;
+    const { createdAt, img, text, uid, likes } = post;
+
+    const { currentUser, users } = useSelector((state) => state.users);
+    const [postUser] = useState(users.filter((user) => user.user.uid === uid));
 
     const [show, setShow] = useState(false);
-    const [title, setTitle] = useState(text);
-    const [edit, setEdit] = useState(false);
     const [active, setActive] = useState(false);
+    const [postEditActive, setPostEdit] = useState(false);
     const [comments, setComments] = useState([]);
     const [like, setLikes] = useState(likes);
     const [isLike, setIsLike] = useState(likes.includes(user.uid));
-
-
 
     useEffect(() => {
         let unsubscribe;
@@ -36,26 +41,33 @@ function Post({ post, doc }) {
         unsubscribe = firestore.collection('posts').doc(doc)
             .collection('comments').orderBy('timestamp', 'desc')
             .onSnapshot((snapshot) => {
-                setComments(snapshot.docs.map((doc) => ({
-                    doc: doc.id,
-                    datas: doc.data()
-                })))
+                if (!snapshot.empty) {
+                    setComments(snapshot.docs.map((doc) => ({
+                        doc: doc.id,
+                        comment: doc.data()
+                    })))
+                }
             })
 
         return () => unsubscribe();
     }, [])
 
+
     useEffect(() => {
         firestore.collection('posts').doc(doc).update({
             likes: like
         })
-
     }, [isLike])
 
     const onHandleClickLike = () => {
         setIsLike(!isLike);
-        setLikes((prev) => prev.length === 0 && !isLike ? prev : !isLike ? prev.concat(user.uid) : prev.filter((num) => num != user.uid));
-
+        setLikes((prev) => !isLike ? prev.concat(user.uid) : prev.filter((num) => num != user.uid));
+    }
+    const onHandleSubscribe = (postId) => {
+        dispatch(toggleSubscribe({ userId: currentUser?.currentUser.uid, postId, method: 'subscribe' }));
+    }
+    const onHandleUnSubscribe = (postId) => {
+        dispatch(toggleSubscribe({ userId: currentUser?.currentUser.uid, postId, method: 'unsubscribe' }));
     }
 
     document.addEventListener('keydown', ({ key }) => {
@@ -67,28 +79,25 @@ function Post({ post, doc }) {
     const onDelete = (docId) => {
         const isTrue = window.confirm('Вы хотите удалить?');
         if (isTrue) {
-            firestore.collection('posts').doc(docId).delete()
-                .then(() => toast.success('Пост успешно удален!'))
-                .catch((error) => toast.error(error.message))
+            dispatch(deletePost(docId));
         }
     }
-
 
     return (
         <div className="post">
             <div className="post__top">
                 <div className="post__top-left">
-                    <Avatar src={photoURL} className="post__avatar" />
+                    <Avatar src={postUser[0]?.user.photoURL} className="post__avatar" />
                     <div className="post__info">
-                        <a href="#">{displayName}</a>
+                        <a href="#">{postUser[0]?.user.firstName}</a>
                         <p>{new Date(createdAt?.toDate()).toUTCString()}</p>
                     </div>
                 </div>
                 {
-                    user.uid === uid ?
+                    currentUser?.currentUser.uid === uid ?
                         <div className="post__top-right" onClick={() => setShow(!show)}>
                             <div className={`options ${show && 'show'}`}>
-                                <div className="options__item options__edit" onClick={() => setEdit(true)}>
+                                <div className="options__item options__edit" onClick={() => setPostEdit(true)}>
                                     <EditIcon className="options__icon" />
                                     <p>Редактировать</p>
                                 </div>
@@ -99,33 +108,31 @@ function Post({ post, doc }) {
                             </div>
                         </div>
                         :
-                        null
+                        <div className="post__top-right" onClick={() => setShow(!show)}>
+                            <div className={`options ${show && 'show'}`}>
+                                {
+                                    currentUser?.currentUser.following.some((follow) => follow.uid === uid) ?
+                                        <div className="options__item options__unsubscribe" onClick={() => onHandleUnSubscribe(uid)}>
+                                            <GroupRemoveIcon className="options__icon" />
+                                            <p>Отписаться</p>
+                                        </div>
+                                        :
+                                        <div className="options__item options__subscribe" onClick={() => onHandleSubscribe(uid)}>
+                                            <GroupAddIcon className="options__icon" />
+                                            <p>Подписаться</p>
+                                        </div>
+                                }
+                                <div className="options__item options__share" >
+                                    <ShareOutlinedIcon className="options__icon" />
+                                    <p>Поделиться</p>
+                                </div>
+                            </div>
+                        </div>
                 }
             </div>
             <div className="post__img">
                 {
                     typeof img == 'object' && img.length > 1 ?
-                        // <ReactElasticCarousel renderPagination={({ pages, activePage, onClick }) => {
-                        //     return (
-                        //         <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        //             {pages.map(page => {
-                        //                 const isActivePage = activePage === page
-                        //                 return (
-                        //                     <Circle
-                        //                         className={`paginate ${isActivePage ? 'is-active' : ''}`}
-                        //                         key={page}
-                        //                         onClick={() => onClick(page)}
-                        //                         active={isActivePage}
-                        //                     ></Circle>
-                        //                 )
-                        //             })}
-                        //         </div>
-                        //     )
-                        // }} >
-                        //     {
-                        //         img.map((item, index) => <img key={String(uid + index)} src={item} alt="img__post" />)
-                        //     }
-                        // </ReactElasticCarousel>
                         <ImageGallery items={img.map((item) => ({ original: item, thumbnail: item }))} showNav={false} showIndex={true} stopPropagation={true} />
                         :
                         <ImageGallery items={img.map((item) => ({ original: item, thumbnail: item }))} showNav={false} showThumbnails={false} showPlayButton={false} />
@@ -173,6 +180,7 @@ function Post({ post, doc }) {
             </div>
 
             <PostDetail doc={doc} postik={post} comments={comments} active={active} setActive={setActive} />
+            <PostEdit doc={doc} postik={post} setPostEdit={setPostEdit} postEditActive={postEditActive} />
 
         </div>
     )

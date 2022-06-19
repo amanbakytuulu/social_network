@@ -4,40 +4,33 @@ import { getAuth } from 'firebase/auth';
 import { firestore } from '../../firebase';
 import { toast } from 'react-toastify';
 import { useLoading } from './../../hooks/useLoading';
-import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function AddressDetails() {
 
     const auth = getAuth();
     const user = auth.currentUser;
     const { loading, setLoading } = useLoading();
-    let navigate = useNavigate();
+    const { currentUser } = useSelector((state) => state.users);
 
-    const [doc, setDoc] = useState([]);
     const [country, setCountry] = useState("");
     const [city, setCity] = useState("");
     const [address, setAddress] = useState("");
     const [pin, setPin] = useState("");
 
-    useEffect(() => {
-        firestore.collection("users").where('uid', '==', user.uid)
-            .onSnapshot((snap) => setDoc(snap.docs.map((doc) =>
-                ({ doc: doc.id, data: doc.data() }))))
-
-    }, [])
 
     useEffect(() => {
-        setCountry(doc[0]?.data.location?.country || "");
-        setCity(doc[0]?.data.location?.city || "");
-        setAddress(doc[0]?.data.location?.address || "");
-        setPin(doc[0]?.data.location?.pin || "");
-    }, [doc])
+        setCountry(currentUser?.currentUser.location.country || "");
+        setCity(currentUser?.currentUser.location.city || "");
+        setAddress(currentUser?.currentUser.location.address || "");
+        setPin(currentUser?.currentUser.location.pin || "");
+    }, [currentUser])
 
 
     const onSend = (e) => {
         e.preventDefault();
         setLoading(true);
-        firestore.collection("users").doc(doc[0].doc).update({
+        firestore.collection("users").doc(currentUser?.doc).update({
             location: {
                 country,
                 city,
@@ -46,7 +39,6 @@ function AddressDetails() {
             }
         }).then(() => {
             setLoading(false);
-            navigate("/");
             return toast.success("Успешно обновлено!");
         })
 

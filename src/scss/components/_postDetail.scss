@@ -80,3 +80,21 @@
         }
     }
 }
+
+@media screen and (max-width: 920px) {
+    .postDetail {
+        .modal-content {
+            flex-direction: column;
+
+            & .modal__src {
+                .image-gallery-content .image-gallery-slide .image-gallery-image {
+                    max-height: calc(60vh - 80px);
+                }
+            }
+
+            & .modal__content {
+                flex: 0.85;
+            }
+        }
+    }
+}

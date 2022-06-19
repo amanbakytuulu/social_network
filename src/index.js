@@ -21,28 +21,34 @@ import AccountDetails from './components/Details/AccountDetails';
 import AddressDetails from './components/Details/AddressDetails';
 import SocialDetails from './components/Details/SocialDetails';
 import PasswordDetails from './components/Details/PasswordDetails';
+import Profile from './pages/Profile/Profile';
+import { Provider } from 'react-redux';
+import store from './redux';
 
 ReactDOM.render(
   <BrowserRouter>
-    <ThemeContextWrapper>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<Feed />} />
-          <Route path="chat" element={<Message />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="settings/info-account" element={<AccountDetails />} />
-          <Route path="settings/address-info" element={<AddressDetails />} />
-          <Route path="settings/social-info" element={<SocialDetails />} />
-          <Route path="settings/change-password" element={<PasswordDetails />} />
-        </Route>
-        <Route path="/login" element={<Login />}>
-          <Route path="signIn" element={<SignIn />} />
-          <Route path="signUp" element={<SignUp />} />
-          <Route path="resetPassword" element={<ResetPassword />} />
-        </Route>
-      </Routes>
-      <ToastContainer />
-    </ThemeContextWrapper>
+    <Provider store={store}>
+      <ThemeContextWrapper>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<Feed />} />
+            <Route path="chat" element={<Message />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="settings/info-account" element={<AccountDetails />} />
+            <Route path="settings/address-info" element={<AddressDetails />} />
+            <Route path="settings/social-info" element={<SocialDetails />} />
+            <Route path="settings/change-password" element={<PasswordDetails />} />
+          </Route>
+          <Route path="/login" element={<Login />}>
+            <Route path="signIn" element={<SignIn />} />
+            <Route path="signUp" element={<SignUp />} />
+            <Route path="resetPassword" element={<ResetPassword />} />
+          </Route>
+        </Routes>
+        <ToastContainer />
+      </ThemeContextWrapper>
+    </Provider>
   </BrowserRouter >,
   document.getElementById('root')
 );

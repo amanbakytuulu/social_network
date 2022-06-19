@@ -5,21 +5,30 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import avatar1 from '../../assets/images/avatar1.png';
 import avatar2 from '../../assets/images/avatar2.png'
-
+import IosShareIcon from '@mui/icons-material/IosShare';
+import { getAuth } from 'firebase/auth';
+import { Avatar } from '@mui/material';
 
 function Message() {
 
+  const auth = getAuth();
+  const user = auth?.currentUser;
+
   const [show, setShow] = useState(false);
+
+  const onSendMessage = (e) => {
+    e.preventDefault();
+  }
   return (
     <>
       <div className="message">
         <div className="container">
           <div className="message__top">
             <div className="message__info">
-              <img src={avatar1} alt="photo" />
-              <p>Team leader</p>
+              <Avatar src={user.photoURL} alt="photo"/>
+              <p>{user.displayName}</p>
             </div>
-            <div className="message__actions" onClick={()=>setShow(!show)}>
+            <div className="message__actions" onClick={() => setShow(!show)}>
               <div className={`options ${show && 'show'}`}>
                 <div className="options__item">
                   <DeleteOutlineIcon className="options__icon" />
@@ -166,11 +175,20 @@ function Message() {
               </div>
             </div>
           </div>
-          <div className="message__input">
-            <button className="message__voice"><KeyboardVoiceIcon /></button>
-            <input type="text" />
-            <button className="message__send"><SendIcon className="message__send-icon" /> </button>
-          </div>
+          <form onSubmit={onSendMessage}>
+            <div className="field">
+              <button className="message__voice mr-1"><KeyboardVoiceIcon /></button>
+              <input type="file" id="photo" style={{ display: 'none' }} />
+              <label htmlFor="photo">
+                <IosShareIcon />
+              </label>
+
+              <p className="control has-icons-right">
+                <input className="input px-4" type="text" placeholder="Сообщение..." />
+              </p>
+              <button type="submit" className="message__send"><SendIcon className="message__send-icon" /> </button>
+            </div>
+          </form>
         </div>
       </div>
     </>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import SettingLayout from '../SettingLayout'
-import avatar from '../../assets/images/avatar1.png';
 import { getAuth } from 'firebase/auth';
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import { firestore, storage } from '../../firebase';
@@ -9,75 +8,48 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { useLoading } from './../../hooks/useLoading';
 import { Avatar } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { updatePhoto, updateProfile } from './../../redux/userSlice';
 
 function AccountDetails() {
 
   let navigate = useNavigate();
   const auth = getAuth();
   const user = auth.currentUser;
-  const [doc, setDoc] = useState([]);
+  const dispatch = useDispatch();
+  const { currentUser, status } = useSelector((state) => state.users);
 
   const [photo, setPhoto] = useState({});
   const [previewPhoto, setPreviewPhoto] = useState({});
-  const [firstName, setFirstName] = useState(user.displayName);
+  const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState(user.email);
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [about, setAbout] = useState("");
 
-  const { loading, setLoading } = useLoading();
 
   useEffect(() => {
-    firestore.collection('users').where('uid', '==', user.uid)
-      .onSnapshot((snap) => setDoc(snap.docs.map((doc) =>
-        ({ doc: doc.id, data: doc.data() }))));
-
-  }, [])
-
-  useEffect(() => {
-    setPhone(doc[0]?.data.phone);
-    setLastName(doc[0]?.data.lastName);
-    setAbout(doc[0]?.data.about);
-  }, [doc])
+    setFirstName(currentUser?.currentUser.firstName);
+    setLastName(currentUser?.currentUser.lastName);
+    setEmail(currentUser?.currentUser.email);
+    setPhone(currentUser?.currentUser.phone);
+    setAbout(currentUser?.currentUser.about);
+  }, [currentUser])
 
   const onSend = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     if (firstName.length == "") {
       return toast.error("Имя обязательно!")
     }
 
     if (photo.name) {
-      let storageRef = storage.ref('profilePictures/' + user.uid + '.jpg');
-      const uploadTask = storageRef.put(photo);
-
-      uploadTask.on('state_changed', () => { },
-        (error) => { },
-        () => {
-          storageRef.getDownloadURL().then((url) => {
-            return firebase.auth().currentUser.updateProfile({ photoURL: url })
-          }).then(() => {
-            navigate("/");
-            setLoading(false);
-            return toast.success('Фото обновлено!')
-          })
-        })
+      dispatch(updatePhoto({ user: currentUser, photo }))
+      setPhoto({})
     }
 
     if (firstName.length !== "") {
-      firestore.collection('users').doc(doc[0].doc).update({
-        name: firstName,
-        lastName,
-        phone,
-        about
-      }).then(() => {
-        firebase.auth().currentUser.updateProfile({
-          displayName: firstName,
-        })
-        setLoading(false);
-        return toast.success("Успешно обновлено!")
-      })
+      dispatch(updateProfile({ doc: currentUser?.doc, firstName, lastName, phone, about, photo }))
     }
 
   }
@@ -104,9 +76,9 @@ function AccountDetails() {
       <form>
         <div className="has-text-centered mb-5">
           <figure className="image is-128x128 mx-auto">
-            <Avatar src={user.photoURL} alt="avatar_user" sx={{ width: '100%', height: '100%' }} />
+            <Avatar src={currentUser?.currentUser.photoURL} alt="avatar_user" sx={{ width: '100%', height: '100%' }} />
           </figure>
-          <p className="title is-size-4 has-text-weight-bold mt-3">{user.displayName}</p>
+          <p className="title is-size-4 has-text-weight-bold mt-3">{currentUser?.currentUser.firstName}</p>
         </div>
         <div className="columns">
           <div className="column">
@@ -176,7 +148,7 @@ function AccountDetails() {
             </div>
           </div>
         </div>
-        {loading ?
+        {status === 'loading' ?
           <button type="submit" className="button is-link py-5 px-6 has-text-weight-semibold"
             disabled>Подождите
           </button>

@@ -2,39 +2,15 @@ import React, { memo, useEffect, useState } from 'react';
 import StoryWheel from '../../components/StoryWheel';
 import AddPost from '../../components/AddPost';
 import Post from '../../components/Post';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from '../../firebase';
 import Loader from '../../components/Loader/Loader';
 import Stories from 'react-insta-stories';
 import avatar from '../../assets/15sec.mp4'
-import { useLoading } from './../../hooks/useLoading';
+import { useSelector } from 'react-redux';
 
 function Feed() {
 
-    const [posts, setPosts] = useState([]);
-    const { loading, setLoading } = useLoading();
-
-    // const [datas, loading] = useCollectionData(
-    //     firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot)=>{
-    //         return snapshot.docs.map((snapshot)=>snapshot.id)
-    //     })
-    // );
-
-    useEffect(async () => {
-        let unsubscribe;
-        setLoading(true);
-        unsubscribe = await firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-            setLoading(false);
-            setPosts(snapshot.docs.map((doc) => {
-                return {
-                    doc: doc.id,
-                    post: doc.data()
-                }
-            }))
-        })
-
-        return () => unsubscribe();
-    }, [])
+    const { status, posts } = useSelector((state) => state.posts)
 
     const stories = [
         {
@@ -80,18 +56,20 @@ function Feed() {
             <div className="feed__body">
                 <AddPost />
                 {
-                    loading && <div style={{ margin: '0 auto' }}><Loader /></div>
+                    status === 'loading' && <div style={{ margin: '0 auto' }}><Loader /></div>
                 }
                 {posts &&
                     posts.map((post, index) => {
                         return (
-                            <Post key={index} {...post} index={index} />
+                            <Post key={index} {...post} />
                         )
                     })
                 }
             </div>
-        </div>
+        </div >
     )
 }
 
 export default memo(Feed);
+
+

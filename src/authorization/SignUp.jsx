@@ -14,8 +14,12 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import firebase, { firestore } from './../firebase';
 import { useError } from './../hooks/useError';
+import { addNewUser } from '../redux/userSlice';
+import { useDispatch } from 'react-redux';
 
 function SignUp() {
+
+    const auth = getAuth();
 
     const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
@@ -24,10 +28,10 @@ function SignUp() {
     const { error, setError } = useError();
 
     const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
 
     const onSend = async (event) => {
         event.preventDefault();
-        const auth = getAuth();
         setLoading(true);
         await createUserWithEmailAndPassword(auth, email, password)
             .then((res) => {
@@ -39,23 +43,7 @@ function SignUp() {
 
             }).then(() => {
                 const user = firebase.auth().currentUser;
-
-                addDoc(collection(firestore, "users"), {
-                    uid: user.uid,
-                    name: user.displayName,
-                    authProvider: "local",
-                    email,
-                    lastName: '',
-                    phone: '',
-                    about: '',
-                    location: {
-                        country: '',
-                        city: '',
-                        address: '',
-                        pin: ''
-                    }
-
-                });
+                dispatch(addNewUser(user));
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -99,7 +87,12 @@ function SignUp() {
             {/* <label>
                 <input type="checkbox" />Запомнить
             </label> */}
-            <button type="submit" style={{ marginTop: '10px' }}>{loading ? 'Обработка...' : 'Зарегистрироваться'}</button>
+            {
+                loading ?
+                    <button type="submit" style={{ marginTop: '10px', background:'black' }} disabled>Обработка...</button>
+                    :
+                    <button type="submit" style={{ marginTop: '10px' }}>Зарегистрироваться</button>
+            }
             <p>У вас есть аккаунт? <NavLink to="/login/signIn">Войти</NavLink> </p>
         </form>
     )

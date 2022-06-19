@@ -1,10 +1,10 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 
-function SidebarRow({Icon,title,color,bg_gradient, setActive}) {
+function SidebarRow({ Icon, title, color, bg_gradient, setActive, active }) {
 
     return (
-        <div className={`sidebarRow `} > 
-            <Icon style={{color, borderRadius:'50px'}} className={`sidebarRow__icon ${bg_gradient}`}/>
+        <div className={`sidebarRow`} >
+            <Icon style={{ color, borderRadius: '50px' }} className={`sidebarRow__icon ${bg_gradient}`} />
             <p className="sidebarRow__title">{title}</p>
         </div>
     )

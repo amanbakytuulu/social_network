@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
 
 .post {
-    margin: 0.7rem 0rem;
+    margin: 0.5rem 0rem;
     border: 1px solid var(--container-color);
     border-top: hidden;
     border-bottom: 1px solid var(--container-color);
@@ -103,6 +103,20 @@
                     &.options__delete:hover p,
                     &.options__delete:hover .options__icon {
                         color: #ff0000;
+                    }
+
+                    &.options__subscribe:hover p,
+                    &.options__subscribe:hover .options__icon {
+                        color: #23e283;
+                    }
+                    &.options__unsubscribe:hover p,
+                    &.options__unsubscribe:hover .options__icon {
+                        color: #e22706;
+                    }
+
+                    &.options__share:hover p,
+                    &.options__share:hover .options__icon {
+                        color: #34a8f5;
                     }
                     & p {
                         padding-left: 10px;
