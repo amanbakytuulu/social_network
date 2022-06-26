@@ -17,51 +17,36 @@ import { useError } from './../hooks/useError';
 import { firestore } from '../firebase';
 import { addNewUser } from '../redux/userSlice';
 import { useDispatch } from 'react-redux';
+import { signInResolver } from './../validates/signInResolver';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 function SignIn() {
 
     const auth = getAuth();
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isEmptyEmail, setIsEmptyEmail] = useState(false);
-    const [isEmptyPassword, setIsEmptyPassword] = useState(false);
-    const { error, setError } = useError();
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    const { formOptions } = signInResolver();
+    const { register, handleSubmit, formState } = useForm(formOptions);
+    const { errors } = formState;
 
-        if (email.length == '' || password.length == '') {
-            setLoading(false);
-            setIsEmptyEmail(true);
-            setIsEmptyPassword(true);
-            return setError('Поля не могут быть пустыми');
-        }
+    const onSubmit = async ({ email, password }) => {
+        setLoading(true);
 
         await signInWithEmailAndPassword(auth, email, password).then((user) => {
             setLoading(false);
-            setError('');
-            setIsEmptyEmail(false);
-            setIsEmptyPassword(false);
 
         }).catch((error) => {
             const errorCode = error.code;
-            setLoading(false);
-            setIsEmptyEmail(false);
-            setIsEmptyPassword(false);
+            setLoading(false);;
             switch (errorCode) {
                 case 'auth/user-not-found':
                 case 'auth/wrong-password':
-                    setError('Неверный логин или пароль');
-                    break;
-                case 'auth/invalid-email':
-                    setError('Некорректный email');
+                    toast.error('Неверный логин или пароль!');
                     break;
                 default:
-                    setError('');
+                    toast.error('Неверный логин или пароль!');
             }
 
         })
@@ -78,8 +63,7 @@ function SignIn() {
                 dispatch(addNewUser(user));
             }
         } catch (err) {
-            console.error(err);
-            alert(err.message);
+            console.error(err.message);
         }
     };
 
@@ -94,23 +78,32 @@ function SignIn() {
                 dispatch(addNewUser(user));
             }
         } catch (err) {
-            alert(err.message);
+            console.error(err.message);
         }
     }
 
 
     return (
-        <form onSubmit={onSubmit} className="signIn">
+        <form onSubmit={handleSubmit(onSubmit)} className="signIn">
             <h1>Авторизация</h1>
             <div className="signIn__input">
-                <MailOutlineIcon className="signIn__icon" />
-                <input type="text" id="email" style={{ border: `${isEmptyEmail ? '1px solid red' : ''}` }} placeholder="Your email address" onChange={(e) => setEmail(e.target.value)} />
+                <MailOutlineIcon
+                    className={`signIn__icon ${errors.email && 'has-text-danger-dark'}`} />
+                <input type="text" id="email"
+                    placeholder="Your email address"
+                    className={`${errors.email && 'is-danger'}`}
+                    {...register('email')} />
             </div>
+            <p className="help has-text-danger-dark mt-0 has-text-left is-size-6">{errors.email?.message}</p>
             <div className="signIn__input">
-                <LockOpenIcon className="signIn__icon" />
-                <input type="password" id="password" style={{ border: `${isEmptyPassword ? '1px solid red' : ''}` }} placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+                <LockOpenIcon
+                    className={`signIn__icon ${errors.password && 'has-text-danger-dark'}`} />
+                <input type="password" id="password"
+                    placeholder="Password"
+                    className={`${errors.password && 'is-danger'}`}
+                    {...register('password')} />
             </div>
-            <div style={{ color: 'red' }}>{error && error}</div>
+            <p className="help has-text-danger-dark mt-0 has-text-left is-size-6">{errors.password?.message}</p>
             <div className="signIn__save" style={{ marginBottom: '5px' }}>
                 <label>
                     <input type="checkbox" />Запомнить

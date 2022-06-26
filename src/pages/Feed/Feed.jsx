@@ -5,7 +5,7 @@ import Post from '../../components/Post';
 import { firestore } from '../../firebase';
 import Loader from '../../components/Loader/Loader';
 import Stories from 'react-insta-stories';
-import avatar from '../../assets/15sec.mp4'
+import avatar from '../../assets/new.mp4'
 import { useSelector } from 'react-redux';
 
 function Feed() {
@@ -44,15 +44,15 @@ function Feed() {
     return (
         <div className="feed">
             <StoryWheel />
-
-            {/* <div style={{ marginLeft: '400px' }}>
-                <Stories
-                    stories={stories}
-                    loop={true}
-                    onAllStoriesEnd={() => alert('the end')}
-                    defaultInterval={1500}
-                />
-            </div> */}
+            {/*     
+                <div style={{ marginLeft: '400px' }}>
+                    <Stories
+                        stories={stories}
+                        loop={true}
+                        onAllStoriesEnd={() => alert('the end')}
+                        defaultInterval={1500}
+                    />
+                </div> */}
             <div className="feed__body">
                 <AddPost />
                 {

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 
-function StoryAdd({ title }) {
+function StoryAdd({ setShow, title }) {
+
     return (
         <div className="storyAdd">
-            <div className="storyAdd__icon" >
+            <div className="storyAdd__icon" onClick={() => setShow(true)} >
                 <AddIcon fontSize="medium" />
             </div>
             <h4>{title}</h4>

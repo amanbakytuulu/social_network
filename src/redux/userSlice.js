@@ -28,7 +28,6 @@ export const addNewUser = createAsyncThunk(
     async function (user, { rejectWithValue }) {
 
         const data = [];
-
         try {
             await firestore.collection('users').add({
                 uid: user.uid,
@@ -55,10 +54,12 @@ export const addNewUser = createAsyncThunk(
                     gitHub: '',
                     skype: '',
                     google: ''
-                }
+                },
+                chatUid: [],
+                newMessage: []
             })
                 .then((newPost) => newPost.get().then((post) => (
-                    post.exists && data.push({ doc: post.id, post: post.data() })
+                    post.exists && data.push({ doc: post.id, user: post.data() })
                 )))
                 .catch((error) => toast.error('Не удалось добавить пользователя!'));
             return data[0];
@@ -75,7 +76,6 @@ export const getCurrentUser = createAsyncThunk(
         const currentUser = [];
 
         try {
-
             await firestore.collection('users').where('uid', '==', uid)
                 .get().then((curUser) => curUser.docs.map(user => {
                     user.exists && currentUser.push({ doc: user.id, currentUser: user.data() })
@@ -83,7 +83,7 @@ export const getCurrentUser = createAsyncThunk(
 
             return currentUser[0];
         } catch (error) {
-            return rejectWithValue('Что-то пошло не так!')
+            return rejectWithValue(error.message);
         }
     }
 )
@@ -123,7 +123,7 @@ export const toggleSubscribe = createAsyncThunk(
             }
 
         } catch (error) {
-            return rejectWithValue('Ошибка сервера!');
+            return rejectWithValue(error.message);
         }
     }
 )
@@ -181,6 +181,103 @@ export const updateProfile = createAsyncThunk(
     }
 )
 
+export const updateAddress = createAsyncThunk(
+    'users/updateAddress',
+    async function ({ country, city, address, pin, doc }, { rejectWithValue, dispatch }) {
+        try {
+            await firestore.collection("users").doc(doc).update({
+                location: {
+                    country,
+                    city,
+                    address,
+                    pin
+                }
+            }).then(() => {
+                toast.success("Успешно обновлено!");
+            })
+            dispatch(updateAddressDate({ country, city, address, pin }));
+
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const updateSocial = createAsyncThunk(
+    'users/updateSocialData',
+    async function ({ facebook, twitter, linkedIn, instagram, vk, github, skype, google, doc }, { rejectWithValue, dispatch }) {
+        try {
+            await firestore.collection("users").doc(doc).update({
+                socials: {
+                    facebook, twitter, linkedIn, instagram, vk, github,
+                    skype, google
+                }
+            }).then(() => toast.success("Успешно обновлено!"))
+                .catch((error) => toast.error(error.message));
+            dispatch(updateSocialDate({ facebook, twitter, linkedIn, instagram, vk, github, skype, google }));
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const updateChatUsers = createAsyncThunk(
+    'users/updateChatUsers',
+    async function ({ currentUser, getterUser }, { rejectWithValue, dispatch }) {
+        try {
+            firestore.collection('users').doc(currentUser.doc).get()
+                .then((data) => {
+                    if (data.data().chatUsers.length === 0 ||
+                        data.data().chatUsers.some((chatUser) => chatUser.uid !== getterUser.user.uid)) {
+                        firestore.collection('users').doc(currentUser.doc).update({
+                            chatUsers: getterUser.user.chatUsers.concat({
+                                photoURL: getterUser.user.photoURL,
+                                firstName: getterUser.user.firstName,
+                                uid: getterUser.user.uid
+                            })
+                        });
+                        firestore.collection('users').doc(getterUser.doc).update({
+                            chatUsers: currentUser.currentUser.chatUsers.concat({
+                                photoURL: currentUser.currentUser.photoURL,
+                                firstName: currentUser.currentUser.firstName,
+                                uid: currentUser.currentUser.uid
+                            })
+                        });
+
+                        dispatch(updateChatUsersDate({ getterUid: getterUser.user.uid }))
+                    }
+
+                    firestore.collection('users').doc(getterUser.doc).update({
+                        newMessage: getterUser.user.newMessage.concat(
+                            currentUser.currentUser.uid
+                        )
+                    }).then(() => {
+                        dispatch(gotNewMessage({ getterUid: getterUser.user.uid }));
+                    })
+                })
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+
+    }
+)
+
+export const updateNotificationMessage = createAsyncThunk(
+    'users/updateNotificationMessage',
+    async function ({ currentUser, uid }, { rejectWithValue, dispatch }) {
+        try {
+            firestore.collection('users').doc(currentUser.doc)
+                .update({
+                    newMessage: currentUser.currentUser.newMessage.filter((mess) => mess !== uid)
+                }).then(() => {
+                    dispatch(deleteNewMessage({uid}))
+                })
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
 const initialState = {
     status: '',
     error: null,
@@ -195,6 +292,9 @@ const setError = (state, action) => {
 const setPending = (state, action) => {
     state.status = 'loading';
     state.error = null;
+}
+const setSuccess = (state, action) => {
+    state.status = 'success';
 }
 
 const userSlice = createSlice({
@@ -221,6 +321,42 @@ const userSlice = createSlice({
             state.currentUser.currentUser.lastName = action.payload.lastName
             state.currentUser.currentUser.phone = action.payload.phone
             state.currentUser.currentUser.about = action.payload.about
+        },
+        updateAddressDate(state, action) {
+            state.currentUser.currentUser.location.country = action.payload.country;
+            state.currentUser.currentUser.location.city = action.payload.city;
+            state.currentUser.currentUser.location.address = action.payload.address;
+            state.currentUser.currentUser.location.pin = action.payload.pin;
+        },
+        updateSocialDate(state, action) {
+            state.currentUser.currentUser.socials.facebook = action.payload.facebook;
+            state.currentUser.currentUser.socials.twitter = action.payload.twitter;
+            state.currentUser.currentUser.socials.linkedIn = action.payload.linkedIn;
+            state.currentUser.currentUser.socials.instagram = action.payload.instagram;
+            state.currentUser.currentUser.socials.vk = action.payload.vk;
+            state.currentUser.currentUser.socials.github = action.payload.github;
+            state.currentUser.currentUser.socials.skype = action.payload.skype;
+            state.currentUser.currentUser.socials.google = action.payload.google;
+        },
+        updateChatUsersDate(state, action) {
+            const getterUser = state.users.find(({ user }) => user.uid === action.payload.getterUid);
+            state.currentUser.currentUser.chatUsers = getterUser?.user.chatUsers.concat({
+                photoURL: getterUser?.user.photoURL,
+                firstName: getterUser?.user.firstName,
+                uid: getterUser?.user.uid
+            });
+            getterUser.user.chatUsers = state.currentUser?.currentUser.chatUsers.concat({
+                photoURL: state.currentUser?.currentUser.photoURL,
+                firstName: state.currentUser?.currentUser.firstName,
+                uid: state.currentUser?.currentUser.uid
+            });
+        },
+        gotNewMessage(state, action) {
+            const getterUser = state.users.find(({ user }) => user.uid === action.payload.getterUid);
+            getterUser.user.newMessage = getterUser.user.newMessage.concat(state.currentUser.currentUser.uid);
+        },
+        deleteNewMessage(state, action) {
+            state.currentUser.currentUser.newMessage = state.currentUser.currentUser.newMessage.filter((mess) => mess !== action.payload.uid)
         }
     },
     extraReducers: {
@@ -228,6 +364,8 @@ const userSlice = createSlice({
         [addNewUser.pending]: setPending,
         [updatePhoto.pending]: setPending,
         [updateProfile.pending]: setPending,
+        [updateAddress.pending]: setPending,
+        [updateSocial.pending]: setPending,
         [fetchUsers.fulfilled]: (state, action) => {
             state.status = 'success';
             state.users = action.payload
@@ -238,20 +376,23 @@ const userSlice = createSlice({
         [getCurrentUser.fulfilled]: (state, action) => {
             state.currentUser = action.payload
         },
-        [updatePhoto.pending]: (state, action) => {
-            state.status = 'success';
-        },
-        [updateProfile.fulfilled]: (state, action) => {
-            state.status = 'success';
-        },
+        [updatePhoto.fulfilled]: setSuccess,
+        [updateProfile.fulfilled]: setSuccess,
+        [updateAddress.fulfilled]: setSuccess,
+        [updateSocial.fulfilled]: setSuccess,
         [fetchUsers.rejected]: setError,
         [addNewUser.rejected]: setError,
         [getCurrentUser.rejected]: setError,
         [updatePhoto.rejected]: setError,
-        [updateProfile.rejected]: setError
+        [updateProfile.rejected]: setError,
+        [updateAddress.rejected]: setError,
+        [updateSocial.rejected]: setError,
+        [updateChatUsers.rejected]: setError,
+        [updateNotificationMessage.rejected]: setError
     }
+
 })
 
-const { toogleSubscriber, toggleUnSubscriber, updateAvatar, updateProfileDate } = userSlice.actions;
+const { toogleSubscriber, toggleUnSubscriber, updateAvatar, updateProfileDate, updateAddressDate, updateSocialDate, updateChatUsersDate, gotNewMessage, deleteNewMessage } = userSlice.actions;
 
 export default userSlice.reducer;

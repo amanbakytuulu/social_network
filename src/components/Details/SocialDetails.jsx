@@ -7,15 +7,16 @@ import { firestore } from '../../firebase';
 import { toast } from 'react-toastify';
 import { socialResolver } from './../../validates/socialResolver';
 import { useForm } from 'react-hook-form';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateSocial } from '../../redux/userSlice';
 
 function SocialDetails() {
 
     const auth = getAuth();
     const user = auth.currentUser;
-    const { loading, setLoading } = useLoading();
-    let navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { currentUser, status } = useSelector((state) => state.users);
 
-    const [doc, setDoc] = useState([]);
     const [facebook, setFacebook] = useState("");
     const [twitter, setTwitter] = useState("");
     const [linkedIn, setLinkedIn] = useState("");
@@ -27,43 +28,22 @@ function SocialDetails() {
 
 
     useEffect(() => {
-        firestore.collection("users").where('uid', '==', user.uid)
-            .onSnapshot((snap) => setDoc(snap.docs.map((doc) =>
-                ({ doc: doc.id, data: doc.data() }))))
-
-    }, [])
-
-    useEffect(() => {
-        setFacebook(doc[0]?.data.social?.facebook || "");
-        setTwitter(doc[0]?.data.social?.twitter || "");
-        setLinkedIn(doc[0]?.data.social?.linkedIn || "");
-        setInstagram(doc[0]?.data.social?.instagram || "");
-        setVk(doc[0]?.data.social?.vk || "");
-        setSkype(doc[0]?.data.social?.skype || "");
-        setGoogle(doc[0]?.data.social?.google || "");
-        setGitHub(doc[0]?.data.social?.github || "");
-    }, [doc])
+        setFacebook(currentUser?.currentUser.socials.facebook);
+        setTwitter(currentUser?.currentUser.socials.twitter);
+        setLinkedIn(currentUser?.currentUser.socials.linkedIn);
+        setInstagram(currentUser?.currentUser.socials.instagram);
+        setVk(currentUser?.currentUser.socials.vk);
+        setSkype(currentUser?.currentUser.socials.skype);
+        setGoogle(currentUser?.currentUser.socials.google);
+        setGitHub(currentUser?.currentUser.socials.github);
+    }, [currentUser])
 
     const { formOptions } = socialResolver();
     const { register, handleSubmit, formState } = useForm(formOptions);
     const { errors } = formState;
 
     const onSend = (data) => {
-        setLoading(true);
-
-        firestore.collection("users").doc(doc[0].doc).update({
-            social: {
-                facebook, twitter, linkedIn, instagram, vk, github,
-                skype, google
-            }
-        }).then(() => {
-            setLoading(false);
-            navigate("/");
-            return toast.success("Успешно обновлено!");
-        }).catch((error) => {
-            navigate("/");
-            return toast.error("Что то пошло не так!")
-        })
+        dispatch(updateSocial({ facebook, twitter, linkedIn, instagram, vk, github, skype, google, doc: currentUser?.doc }));
     }
 
 
@@ -167,8 +147,8 @@ function SocialDetails() {
                     </div>
                 </div>
 
-                {loading ?
-                    <button type="submit" className="button is-link py-5 px-6 has-text-weight-semibold"
+                {status === 'loading' ?
+                    <button type="submit" className="button is-link py-5 px-6 is-loading"
                         disabled>Подождите
                     </button>
                     :

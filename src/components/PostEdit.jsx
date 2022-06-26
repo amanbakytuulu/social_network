@@ -1,20 +1,53 @@
 import React, { useState, memo } from 'react'
-import { getAuth } from 'firebase/auth';
 import ReactImageGallery from 'react-image-gallery';
 import { Avatar } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import Picker from 'emoji-picker-react';
+import { editPost } from '../redux/postSlice';
 
 
 function PostEdit({ doc, postik, setPostEdit, postEditActive }) {
-
-    const auth = getAuth();
-    const user = auth?.currentUser;
+    const dispatch = useDispatch();
     const { users } = useSelector((state) => state.users);
+    const { status } = useSelector((state) => state.posts);
     const [postUser] = useState(users.filter((user) => user.user.uid === postik.uid));
+
+    const [showSmile, setShowSmile] = useState(false);
+    const [text, setText] = useState(postik.text);
+
+    const handleChangeActive = () => {
+        if (text !== postik.text) {
+            const isInvisible = window.confirm('Отменить изменение?');
+            if (isInvisible) {
+                setPostEdit(false);
+                setShowSmile(false);
+            }
+        } else {
+            setPostEdit(false);
+            setShowSmile(false);
+        }
+    }
+
+    const onEmojiClick = (event, emojiObject) => {
+        setText((prev) => (prev.concat(emojiObject.emoji)));
+    };
+
+    const onSend = (e) => {
+        e.preventDefault();
+        if (text === postik.text) {
+            setPostEdit(false);
+            setShowSmile(false);
+        } else {
+            dispatch(editPost({ text, doc }));
+        }
+
+
+    }
 
     return (
         <div id="modal" className={`modal ${postEditActive ? 'is-active' : ''}`} style={{ zIndex: 999 }}>
-            <div className="modal-background" onClick={() => setPostEdit(false)}></div>
+            <div className="modal-background" onClick={handleChangeActive}></div>
             <div className="container is-fullhd is-flex is-flex-direction-column is-justify-content-center" style={{ maxWidth: '800px', width: '100%' }}>
                 <div className="">
                     <ReactImageGallery items={postik.img.map((item) => ({ original: item, thumbnail: item }))}
@@ -29,13 +62,35 @@ function PostEdit({ doc, postik, setPostEdit, postEditActive }) {
                             </div>
                             <a href=""><strong style={{ color: 'var(--first-color)' }}>{postUser[0]?.user.firstName} </strong> </a>
                         </div>
-                        <p className="mt-2">
-                            <input type="text" className="input has-background-link" style={{color:'var(--text-color)'}} value={postik.text} />
-                        </p>
+                        <div style={{ color: 'var(--second-color)', fontSize: "0.85rem", marginTop: '-5px', marginBottom: '1rem' }}>
+                            {new Date(postik.createdAt?.toDate()).toUTCString()}
+                        </div>
+                        <form className="mt-2 is-flex is-flex-direction-column" onSubmit={onSend}>
+                            <input type="text" className="input has-background-link" style={{ color: 'var(--text-color)' }} value={text} onChange={(e) => setText(e.target.value)} />
+                            <div className="is-flex is-justify-content-space-between is-align-items-center mt-4" style={{ position: 'relative' }}>
+                                <p className="is-flex mb-0" style={{ color: 'var(--first-color)', cursor: 'pointer' }} onClick={() => setShowSmile(!showSmile)}><SentimentVerySatisfiedIcon style={{ color: 'orange', marginRight: '5px' }} />Смайлики</p>
+                                <div style={{ position: 'absolute', top: '-300px', left: '-300px', zIndex: 50 }}>
+                                    {showSmile ?
+                                        <Picker
+                                            onEmojiClick={onEmojiClick}
+                                            disableAutoFocus={true}
+                                            pickerStyle={{ boxShadow: 'none' }}
+                                            groupNames={{ smileys_people: 'PEOPLE' }}
+                                        /> : null
+                                    }
+                                </div>
+                                {
+                                    status === 'loading' ?
+                                        <button type="submit" className="button is-link is-loading" disabled>Обработка...</button>
+                                        :
+                                        <button type="submit" className="button is-link">Сохранить изменение</button>
+                                }
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <button className="modal-close is-large" aria-label="close" onClick={() => setPostEdit(false)}></button>
+            <button className="modal-close is-large" aria-label="close" onClick={handleChangeActive}></button>
         </div>
     )
 }

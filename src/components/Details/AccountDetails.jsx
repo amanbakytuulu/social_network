@@ -149,8 +149,8 @@ function AccountDetails() {
           </div>
         </div>
         {status === 'loading' ?
-          <button type="submit" className="button is-link py-5 px-6 has-text-weight-semibold"
-            disabled>Подождите
+          <button type="submit" className="button is-link py-5 px-6 is-loading"
+            disabled>
           </button>
           :
           <button type="submit" className="button is-link py-5 px-6 has-text-weight-semibold"

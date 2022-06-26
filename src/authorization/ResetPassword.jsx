@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import { toast } from 'react-toastify';
 
 
 function ResetPassword() {
@@ -19,13 +20,13 @@ function ResetPassword() {
             const errorCode = err.code;
             switch (errorCode) {
                 case 'auth/user-not-found':
-                    alert('Такая почта не зарегистрирована!');
+                    toast.error('Такая почта не зарегистрирована!');
                     break;
                 case 'auth/invalid-email':
-                    alert('Неверная почта');
+                    toast.error('Неверная почта');
                     break;
                 default:
-                    alert('Неверная почта');
+                    toast.error('Неверная почта');
             }
         }
     };

@@ -13,25 +13,23 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import firebase, { firestore } from './../firebase';
-import { useError } from './../hooks/useError';
 import { addNewUser } from '../redux/userSlice';
 import { useDispatch } from 'react-redux';
+import { signUpResolver } from './../validates/signUpResolver';
+import { useForm } from 'react-hook-form';
 
 function SignUp() {
 
     const auth = getAuth();
 
-    const [userName, setUserName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [rePassword, setRePassword] = useState('');
-    const { error, setError } = useError();
-
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
 
-    const onSend = async (event) => {
-        event.preventDefault();
+    const { formOptions } = signUpResolver();
+    const { register, handleSubmit, formState } = useForm(formOptions);
+    const { errors } = formState;
+
+    const onSend = async ({ email, userName, password }) => {
         setLoading(true);
         await createUserWithEmailAndPassword(auth, email, password)
             .then((res) => {
@@ -45,51 +43,46 @@ function SignUp() {
                 const user = firebase.auth().currentUser;
                 dispatch(addNewUser(user));
             })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-
-                switch (errorCode) {
-                    case 'auth/invalid-email':
-                        setError('Некоректный email');
-                        break;
-                    case 'auth/weak-password':
-                        setError('Слабый пароль');
-                        break;
-                    default:
-                        setError('');
-                }
-                setLoading(false);
-            })
     }
 
     return (
-        <form className="signUp" onSubmit={onSend}>
+        <form className="signUp" onSubmit={handleSubmit(onSend)}>
             <h1>Регистрация</h1>
             <div className="signUp__input">
-                <MailOutlineIcon className="signUp__icon" />
-                <input type="text" placeholder="Электронный адрес" onChange={(e) => setEmail(e.target.value)} required />
+                <MailOutlineIcon className={`signUp__icon ${errors.email && 'has-text-danger-dark'}`}  />
+                <input type="text" placeholder="Электронный адрес"
+                className={`${errors.email && 'is-danger'}`}
+                    {...register("email")} />
             </div>
+            <p className="help has-text-danger-dark mt-0 is-size-6 has-text-left">{errors.email?.message}</p>
             <div className="signUp__input">
-                <PersonOutlineIcon className="signUp__icon" />
-                <input type="text" placeholder="Имя пользователя" onChange={(e) => setUserName(e.target.value)} required />
+                <PersonOutlineIcon className={`signUp__icon ${errors.userName && 'has-text-danger-dark'}`} />
+                <input type="text" placeholder="Имя пользователя"
+                className={`${errors.userName && 'is-danger'}`}
+                    {...register("userName")} />
             </div>
+            <p className="help has-text-danger-dark mt-0 is-size-6 has-text-left">{errors.userName?.message}</p>
             <div className="signUp__input">
-                <LockOpenIcon className="signUp__icon" />
-                <input type="password" placeholder="Пароль" onChange={(e) => setPassword(e.target.value)} required /><br />
+                <LockOpenIcon className={`signUp__icon ${errors.password && 'has-text-danger-dark'}`} />
+                <input type="password" placeholder="Пароль"
+                className={`${errors.password && 'is-danger'}`}
+                    {...register("password")} /><br />
             </div>
+            <p className="help has-text-danger-dark mt-0 is-size-6 has-text-left">{errors.password?.message}</p>
             <div className="signUp__input">
-                <LockOpenIcon className="signUp__icon" />
-                <input type="password" placeholder="Повторите пароль" onChange={(e) => setRePassword(e.target.value)} required /><br />
+                <LockOpenIcon className={`signUp__icon ${errors.rePassword && 'has-text-danger-dark'}`} />
+                <input type="password" placeholder="Повторите пароль"
+                className={`${errors.rePassword && 'is-danger'}`}
+                    {...register("rePassword")} /><br />
             </div>
-            <div style={{ color: 'red' }}>{error && error}</div>
+            <p className="help has-text-danger-dark mt-0 is-size-6 has-text-left">{errors.rePassword?.message}</p>
 
             {/* <label>
                 <input type="checkbox" />Запомнить
             </label> */}
             {
                 loading ?
-                    <button type="submit" style={{ marginTop: '10px', background:'black' }} disabled>Обработка...</button>
+                    <button type="submit" style={{ marginTop: '10px', background: 'black' }} disabled>Обработка...</button>
                     :
                     <button type="submit" style={{ marginTop: '10px' }}>Зарегистрироваться</button>
             }

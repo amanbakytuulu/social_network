@@ -1,24 +1,25 @@
-.storyAdd{
+.storyAdd {
     background: var(--bg-addStory);
     position: relative;
     min-width: 130px;
     min-height: 170px;
     width: 100%;
     border-radius: 10px;
-    margin-bottom:5px;
+    margin-bottom: 5px;
     overflow: hidden;
 
-    & .storyAdd__icon{
+    & .storyAdd__icon {
         position: absolute;
-        bottom:40px;
+        bottom: 40px;
         background-color: rgb(255, 255, 255);
         border-radius: 50%;
         width: 45px;
         height: 45px;
-        left:calc(50% - 15%);
+        left: calc(50% - 15%);
         padding-left: 10px;
         padding-top: 10px;
-        color:rgb(29, 143, 236);
+        color: rgb(29, 143, 236);
+        cursor: pointer;
     }
 
     // &::before{
@@ -37,12 +38,12 @@
     //     border-radius: 50px;
     // }
 
-    & h4{
+    & h4 {
         position: absolute;
         font-weight: 600;
         font-size: 0.9rem;
-        bottom:13px;
-        left:33px;
-        color:white;
+        bottom: 13px;
+        left: 33px;
+        color: white;
     }
 }

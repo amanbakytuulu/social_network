@@ -53,19 +53,52 @@ export const addNewPost = createAsyncThunk(
 
 export const deletePost = createAsyncThunk(
     'posts/deletePost',
-    async function (id, { rejectWithValue, dispatch }) {
+    async function (doc, { rejectWithValue, dispatch }) {
         try {
-            await firestore.collection('posts').doc(id).delete()
+            await firestore.collection('posts').doc(doc).delete()
                 .then(() => toast.success('Успешно удалено!'))
                 .catch((error) => toast.error('Не удалось удалить!'));
 
-            dispatch(removePost({ id }));
+            dispatch(removePost({ doc }));
         } catch (error) {
             return rejectWithValue('Что-то пошло не так!')
         }
     }
 )
 
+export const editPost = createAsyncThunk(
+    'posts/editPost',
+    async function ({ text, doc }, { rejectWithValue, dispatch }) {
+        try {
+            await firestore.collection('posts').doc(doc)
+                .update({
+                    text
+                }).then(() => toast.success('Пост обновлен!'))
+                .catch((error) => toast.error('Что-то пошло не так!'));
+
+            dispatch(changePost({ text, doc }));
+
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+
+    }
+)
+
+export const updateLike = createAsyncThunk(
+    'posts/updateLike',
+    async function ({ doc, like }, { rejectWithValue, dispatch }) {
+        try {
+            await firestore.collection('posts').doc(doc).update({
+                likes: like
+            });
+
+            dispatch(changeLike({ doc, like }));
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
 const initialState = {
     status: '',
     error: null,
@@ -77,23 +110,31 @@ const setError = (state, action) => {
     state.error = action.payload;
 }
 
+const setStatus = (state, action) => {
+    state.status = 'loading';
+    state.error = null;
+}
+
 const postSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
         removePost(state, action) {
-            state.posts = state.posts.filter(post => post.doc !== action.payload.id)
+            state.posts = state.posts.filter(post => post.doc !== action.payload.doc)
+        },
+        changePost(state, action) {
+            const currentPost = state.posts.find((post) => post.doc === action.payload.doc);
+            currentPost.post.text = action.payload.text;
+        },
+        changeLike(state, action) {
+            const post = state.posts.find((post) => post.doc === action.payload.doc);
+            post.post.likes = action.payload.like;
         }
     },
     extraReducers: {
-        [fetchPosts.pending]: (state, action) => {
-            state.status = 'loading';
-            state.error = null;
-        },
-        [addNewPost.pending]: (state, action) => {
-            state.status = 'loading';
-            state.error = null;
-        },
+        [fetchPosts.pending]: setStatus,
+        [addNewPost.pending]: setStatus,
+        [editPost.pending]: setStatus,
         [fetchPosts.fulfilled]: (state, action) => {
             state.status = 'success';
             state.posts = action.payload;
@@ -102,13 +143,19 @@ const postSlice = createSlice({
             state.status = 'success';
             state.posts.unshift(action.payload);
         },
+        [editPost.fulfilled]: (state, action) => {
+            state.status = 'success'
+        },
         [fetchPosts.rejected]: setError,
-        [addNewPost.rejected]: setError
+        [addNewPost.rejected]: setError,
+        [deletePost.rejected]: setError,
+        [editPost.rejected]: setError,
+        [updateLike.rejected]: setError
     }
 })
 
 
-const { removePost } = postSlice.actions;
+const { changeLike, changePost, removePost } = postSlice.actions;
 
 export default postSlice.reducer;
 

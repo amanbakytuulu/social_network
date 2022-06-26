@@ -38,7 +38,7 @@ function App() {
           <div className="app">
             <Header setActive={setActive} active={active} />
             <div className="app__body">
-              <Sidebar setActive={setActive} active={active} />
+              <Sidebar />
               <Outlet />
               <SidebarChat />
             </div>

@@ -32,7 +32,7 @@ function AddPost() {
         for (let i = 0; i < files.length; i++) {
             if (files[i]?.type.indexOf('image') === -1) {
                 setImages([]);
-                return toast.error('Только изображения или видео!')
+                return toast.error('Только изображения')
             }
         }
 
@@ -56,7 +56,7 @@ function AddPost() {
         e.preventDefault();
 
         if (images == null || images.length == 0) {
-            return toast.warning("Загрузите фото или видео!");
+            return toast.warning("Загрузите фото!");
         }
 
         const promises = [];

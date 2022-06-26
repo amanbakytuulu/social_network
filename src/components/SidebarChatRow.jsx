@@ -1,7 +1,7 @@
 import { Avatar } from '@mui/material';
 import React from 'react';
 
-function SidebarChatRow({ profile, name, status }) {
+function SidebarChatRow({ profile, name, newMessage }) {
     return (
         <div className="sidebarChatRow">
             <div className="sidebarChatRow__user">
@@ -10,11 +10,13 @@ function SidebarChatRow({ profile, name, status }) {
                     <h6>{name}</h6>
                 </div>
             </div>
-            <div className="sidebarChatRow__status"
-                style={{ background: status, width: '8px', height: '8px', borderRadius: '50px' }}>
-            </div>
+            {newMessage ?
+                <div className="sidebarChatRow__status">
+                </div>
+                : null}
         </div>
     )
 }
+
 
 export default SidebarChatRow

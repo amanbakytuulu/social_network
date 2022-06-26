@@ -72,7 +72,7 @@ function PasswordDetails() {
         </div>
 
         {loading ?
-          <button type="submit" className="button is-link py-5 px-6 has-text-weight-semibold"
+          <button type="submit" className="button is-link py-5 px-6 is-loading"
             disabled>Подождите
           </button>
           :

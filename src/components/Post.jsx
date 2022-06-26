@@ -13,9 +13,10 @@ import PostDetail from './Details/PostDetail';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { useSelector, useDispatch } from 'react-redux';
-import { deletePost } from './../redux/postSlice';
+import { deletePost, updateLike } from './../redux/postSlice';
 import { toggleSubscribe } from '../redux/userSlice';
 import PostEdit from './PostEdit';
+import { NavLink } from 'react-router-dom';
 
 function Post({ post, doc }) {
 
@@ -54,9 +55,7 @@ function Post({ post, doc }) {
 
 
     useEffect(() => {
-        firestore.collection('posts').doc(doc).update({
-            likes: like
-        })
+        dispatch(updateLike({ doc, like }));
     }, [isLike])
 
     const onHandleClickLike = () => {
@@ -89,7 +88,13 @@ function Post({ post, doc }) {
                 <div className="post__top-left">
                     <Avatar src={postUser[0]?.user.photoURL} className="post__avatar" />
                     <div className="post__info">
-                        <a href="#">{postUser[0]?.user.firstName}</a>
+                        {
+                            user.uid === uid ?
+                                <NavLink to="/profile" className="has-text-weight-semibold">{postUser[0]?.user.firstName}</NavLink>
+
+                                : <NavLink to={`/profile/${uid}`} className="has-text-weight-semibold">{postUser[0]?.user.firstName}</NavLink>
+
+                        }
                         <p>{new Date(createdAt?.toDate()).toUTCString()}</p>
                     </div>
                 </div>

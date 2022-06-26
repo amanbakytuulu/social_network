@@ -57,7 +57,7 @@ function PostDetail({ doc, postik, comments, active, setActive }) {
                         <div className="modal__time">
                             {new Date(postik.createdAt?.toDate()).toUTCString()}
                         </div>
-                        <AddCircleOutlineOutlinedIcon fontSize='large' className="modal__icon mt-5 mb-0" />
+                        {/* <AddCircleOutlineOutlinedIcon fontSize='large' className="modal__icon mt-5 mb-0" /> */}
                         <div className="modal__comments ">
                             {
                                 comments &&

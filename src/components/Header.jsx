@@ -49,11 +49,6 @@ function Header({ setActive, active }) {
                     </div>
                 </div>
                 <div className="navbar-end">
-                    <div className="navbar-item">
-                        <span className={`icon ${darkMode ? '' : 'has-background-blue'} p-4 is-radius `}>
-                            <PeopleOutlineIcon fontSize='small' sx={{ fontSize: 22 }} className="has-text-blue" />
-                        </span>
-                    </div>
                     <div className="navbar-item ">
                         <span className={`icon ${darkMode ? '' : 'has-background-blue'} p-4 is-radius`}
                             onClick={() => setShowNotification(!showNotification)}>

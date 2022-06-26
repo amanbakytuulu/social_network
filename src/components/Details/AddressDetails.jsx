@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import SettingLayout from '../SettingLayout'
 import { getAuth } from 'firebase/auth';
-import { firestore } from '../../firebase';
-import { toast } from 'react-toastify';
-import { useLoading } from './../../hooks/useLoading';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateAddress } from './../../redux/userSlice';
 
 function AddressDetails() {
 
     const auth = getAuth();
     const user = auth.currentUser;
-    const { loading, setLoading } = useLoading();
-    const { currentUser } = useSelector((state) => state.users);
+    const { currentUser, status } = useSelector((state) => state.users);
+    const dispatch = useDispatch();
 
     const [country, setCountry] = useState("");
     const [city, setCity] = useState("");
@@ -29,19 +27,7 @@ function AddressDetails() {
 
     const onSend = (e) => {
         e.preventDefault();
-        setLoading(true);
-        firestore.collection("users").doc(currentUser?.doc).update({
-            location: {
-                country,
-                city,
-                address,
-                pin
-            }
-        }).then(() => {
-            setLoading(false);
-            return toast.success("Успешно обновлено!");
-        })
-
+        dispatch(updateAddress({ country, city, address, pin, doc: currentUser?.doc }));
     }
 
     return (
@@ -88,9 +74,9 @@ function AddressDetails() {
                     </div>
                 </div>
 
-                {loading ?
-                    <button type="submit" className="button is-link py-5 px-6 has-text-weight-semibold"
-                        disabled>Подождите
+                {status === 'loading' ?
+                    <button type="submit" className="button is-link py-5 px-6 is-loading"
+                        disabled>
                     </button>
                     :
                     <button type="submit" className="button is-link py-5 px-6 has-text-weight-semibold"

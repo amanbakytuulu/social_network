@@ -28,9 +28,15 @@
         }
     }
 
-    & .sidebarChatRow__status{
-        margin-bottom: 15px;
-        margin-right: 10px;
+    & .sidebarChatRow__status {
+        width: 9px;
+        height: 9px;
+        border-radius: 50px;
+        background-color: var(--color-new-message);
+        margin-bottom: 10px;
+        margin-right: 30px;
+        box-shadow: 0px 0px 15px 7px var(--color-new-message);
+        animation: myAnim 2.6s ease-in-out 0s infinite normal forwards;
     }
 
     &:hover h6 {
@@ -38,5 +44,18 @@
     }
     .dark-theme &:hover h6 {
         color: rgb(255, 255, 255);
+    }
+}
+
+@keyframes myAnim {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+
+    25%,
+    75% {
+        opacity: 0;
     }
 }

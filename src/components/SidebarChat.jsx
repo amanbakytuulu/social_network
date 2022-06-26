@@ -1,37 +1,32 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import SidebarChatRow from './SidebarChatRow';
+import { useSelector } from 'react-redux';
+import { firestore } from '../firebase';
+import { NavLink } from 'react-router-dom';
 
 function SidebarChat() {
     const [show, setShow] = useState(true);
-    const [value, setValue] = useState('blue');
-    const [isSearch, setSearch] = useState(false);
+    const { currentUser, users } = useSelector((state) => state.users);
+
+    let colors = ["#10d876", "#FE9431", "#E50202"];
     return (
         <>
             <SidebarChats show={show}>
                 <ToggleButton show={show} onClick={() => setShow(!show)}>{show ? '→' : '←'}</ToggleButton>
                 <StyledWrap>
                     <Title>Контакты</Title>
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#10d876" />
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#FE9431 " />
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#10d876" />
-                    <Title>Группы</Title>
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#10d876" />
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#E50202" />
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#10d876" />
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#10d876" />
-                    <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" status="#10d876" />
-                    {/* <h4>Страницы</h4>
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" />
-                <SidebarChatRow profile="https://templates.iqonic.design/socialv/bs5/react/build/static/media/01.7340bf5d.jpg" name="Anna Sthesia" text="Just Now" /> */}
+                    {
+                        currentUser?.currentUser.chatUsers.map((user) => {
+                            return (
+                                <NavLink to={`/chat/${user.uid}`}>
+                                    <SidebarChatRow profile={user.photoURL}
+                                        name={user.firstName}
+                                        newMessage={currentUser?.currentUser.newMessage.includes(user.uid)} />
+                                </NavLink>
+                            )
+                        })
+                    }
                 </StyledWrap>
             </SidebarChats>
         </>

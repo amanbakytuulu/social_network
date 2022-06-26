@@ -24,6 +24,8 @@ import PasswordDetails from './components/Details/PasswordDetails';
 import Profile from './pages/Profile/Profile';
 import { Provider } from 'react-redux';
 import store from './redux';
+import ProfileUser from './pages/ProfileUser/ProfileUser';
+import MessageEmpty from './pages/Message/MessageEmpty';
 
 ReactDOM.render(
   <BrowserRouter>
@@ -32,8 +34,10 @@ ReactDOM.render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Feed />} />
-            <Route path="chat" element={<Message />} />
+            <Route path="chat" element={<MessageEmpty />} />
+            <Route path="chat/:uid" element={<Message />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="profile/:uid" element={<ProfileUser />} />
             <Route path="settings" element={<Settings />} />
             <Route path="settings/info-account" element={<AccountDetails />} />
             <Route path="settings/address-info" element={<AddressDetails />} />

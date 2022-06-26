@@ -52,6 +52,8 @@
                 & .modal__comments {
                     display: flex;
                     flex-direction: column;
+                    margin-top: 20px;
+                    border-top: 1px solid rgba(156, 156, 156, 0.6);
                     & .modal__comment {
                         display: flex;
                         align-items: center;
