@@ -8,6 +8,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { fetchUsers, getCurrentUser } from './redux/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPosts } from './redux/postSlice';
+import { fetchStories } from './redux/storySlice';
 
 
 function App() {
@@ -26,6 +27,11 @@ function App() {
   useEffect(() => {
     dispatch(fetchPosts())
   }, [])
+
+  useEffect(() => {
+    dispatch(fetchStories())
+  }, [])
+
 
   useEffect(() => {
     dispatch(getCurrentUser(user?.uid));

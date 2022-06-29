@@ -1,12 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import ImageGallery from 'react-image-gallery';
+import { firestore, storage } from '../firebase';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { useLoading } from './../hooks/useLoading';
+import { addStory } from '../redux/storySlice';
 
 function ModalStoryAdd({ setShow, show }) {
 
+    const { currentUser, users } = useSelector((state) => state.users);
+    const dispatch = useDispatch();
     const [file, setFile] = useState([]);
     const [preview, setPreview] = useState([]);
+    const { loading, setLoading } = useLoading();
 
     const onHandleAddStory = (files) => {
+        setPreview([]);
         for (let j = 0, f; f = files[j]; j++) {
             const FReader = new FileReader();
 
@@ -36,8 +45,30 @@ function ModalStoryAdd({ setShow, show }) {
 
     }
 
-    const onSend = () => {
-        
+    const onSend = async () => {
+
+        if (!file) return;
+        setLoading(true);
+        const promises = [];
+        const storageRef = storage.ref();
+        for (let i = 0; i < file.length; i++) {
+            const uploadTask = storageRef.child(`stories/${file[i].name}`).put(file[i]);
+            promises.push(
+                uploadTask.then(snapshot => {
+                    return snapshot.ref.getDownloadURL();
+                })
+            )
+
+        }
+
+        const URLs = await Promise.all(promises);
+        dispatch(addStory({ currentUser, URLs }));
+
+        setLoading(false);
+        toast.success('Успешно добавлено!');
+        setFile([]);
+        setPreview([]);
+        setShow(false);
     }
 
     return (
@@ -59,7 +90,7 @@ function ModalStoryAdd({ setShow, show }) {
                     <label htmlFor="pickAStory"><p className="button is-link">Открыть галерею</p></label>
                 </section>
                 <footer className="modal-card-foot" style={{ backgroundColor: 'var(--container-color)' }}>
-                    <button className="button is-success"
+                    <button className={`button is-success ${loading && 'is-loading'}`}
                         disabled={file.length === 0 ? true : false}
                         onClick={onSend}>
                         Сохранить
@@ -71,4 +102,4 @@ function ModalStoryAdd({ setShow, show }) {
     )
 }
 
-export default ModalStoryAdd
+export default memo(ModalStoryAdd);

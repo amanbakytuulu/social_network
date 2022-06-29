@@ -77,3 +77,10 @@
 .box {
     background-color: var(--container-color);
 }
+
+@media screen and (max-width: 1600px) {
+    .container {
+        max-width: 950px;
+        width: 100%;
+    }
+}

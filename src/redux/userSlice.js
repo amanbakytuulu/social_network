@@ -56,7 +56,8 @@ export const addNewUser = createAsyncThunk(
                     google: ''
                 },
                 chatUid: [],
-                newMessage: []
+                newMessage: [],
+                stories: []
             })
                 .then((newPost) => newPost.get().then((post) => (
                     post.exists && data.push({ doc: post.id, user: post.data() })
@@ -270,13 +271,36 @@ export const updateNotificationMessage = createAsyncThunk(
                 .update({
                     newMessage: currentUser.currentUser.newMessage.filter((mess) => mess !== uid)
                 }).then(() => {
-                    dispatch(deleteNewMessage({uid}))
+                    dispatch(deleteNewMessage({ uid }))
                 })
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 )
+
+// addStory
+// export const addStory = createAsyncThunk(
+//     'stories/addStory',
+//     async function ({ currentUser, URLs }, { rejectWithValue }) {
+//         try {
+//             for (let i = 0; i < URLs.length; i++) {
+//                 firestore.collection('allStories').doc(currentUser.currentUser.firstName)
+//                     .update({
+//                         photoURL: currentUser.currentUser.photoURL,
+//                         firstName: currentUser.currentUser.firstName,
+//                         story: URLs[i],
+//                         uid: currentUser.currentUser.uid,
+//                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
+//                     })
+//             }
+
+//         } catch (error) {
+//             return rejectWithValue(error.message);
+//         }
+//     }
+// )
+//addStory
 
 const initialState = {
     status: '',
@@ -366,6 +390,7 @@ const userSlice = createSlice({
         [updateProfile.pending]: setPending,
         [updateAddress.pending]: setPending,
         [updateSocial.pending]: setPending,
+        // [addStory.pending]: setPending,
         [fetchUsers.fulfilled]: (state, action) => {
             state.status = 'success';
             state.users = action.payload
@@ -380,6 +405,7 @@ const userSlice = createSlice({
         [updateProfile.fulfilled]: setSuccess,
         [updateAddress.fulfilled]: setSuccess,
         [updateSocial.fulfilled]: setSuccess,
+        // [addStory.fulfilled]: setSuccess,
         [fetchUsers.rejected]: setError,
         [addNewUser.rejected]: setError,
         [getCurrentUser.rejected]: setError,
@@ -388,7 +414,8 @@ const userSlice = createSlice({
         [updateAddress.rejected]: setError,
         [updateSocial.rejected]: setError,
         [updateChatUsers.rejected]: setError,
-        [updateNotificationMessage.rejected]: setError
+        [updateNotificationMessage.rejected]: setError,
+        // [addStory.rejected]: setError,
     }
 
 })

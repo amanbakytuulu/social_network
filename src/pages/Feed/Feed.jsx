@@ -10,9 +10,19 @@ import { useSelector } from 'react-redux';
 
 function Feed() {
 
-    const { status, posts } = useSelector((state) => state.posts)
+    const { status, posts } = useSelector((state) => state.posts);
+    const { currentUser } = useSelector((state) => state.users);
+    const { stories } = useSelector((state) => state.stories);
 
-    const stories = [
+    const story = [
+        {
+            url: posts[0]?.post.img,
+            header: {
+                heading: currentUser?.currentUser.firstName,
+                subheading: "Posted 5h ago",
+                profileImage: "https://picsum.photos/1000/1000"
+            }
+        },
         {
             url: 'https://repository-images.githubusercontent.com/167136952/c56d0e80-03a4-11ea-8bc9-122fc897e179'
         },
@@ -44,15 +54,15 @@ function Feed() {
     return (
         <div className="feed">
             <StoryWheel />
-            {/*     
-                <div style={{ marginLeft: '400px' }}>
-                    <Stories
-                        stories={stories}
-                        loop={true}
-                        onAllStoriesEnd={() => alert('the end')}
-                        defaultInterval={1500}
-                    />
-                </div> */}
+
+            <div style={{ marginLeft: '400px' }}>
+                <Stories
+                    stories={story}
+                    loop={true}
+                    onAllStoriesEnd={() => alert('the end')}
+                    defaultInterval={1500}
+                />
+            </div>
             <div className="feed__body">
                 <AddPost />
                 {
