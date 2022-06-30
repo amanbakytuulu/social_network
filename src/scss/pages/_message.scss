@@ -217,7 +217,7 @@
 @media screen and (max-width: 1600px) {
     & .field {
         & p {
-            flex: 0.57;
+            flex: 0.57 !important;
         }
     }
 }

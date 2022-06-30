@@ -57,9 +57,9 @@ function MessageEmpty() {
                         <div className="field">
                             <button className="message__voice mr-1"><KeyboardVoiceIcon /></button>
                             <input type="file" id="photo" style={{ display: 'none' }} />
-                            <label htmlFor="photo">
-                                <IosShareIcon />
-                            </label>
+                            {/* <label htmlFor="photo">
+                                <IosShareIcon fontSize='small'/>
+                            </label> */}
 
                             <p className="control has-icons-right">
                                 <input className="input px-4" type="text" placeholder="Сообщение..."

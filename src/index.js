@@ -26,6 +26,7 @@ import { Provider } from 'react-redux';
 import store from './redux';
 import ProfileUser from './pages/ProfileUser/ProfileUser';
 import MessageEmpty from './pages/Message/MessageEmpty';
+import ModalStoryShow from './components/ModalStoryShow';
 
 ReactDOM.render(
   <BrowserRouter>
@@ -43,6 +44,7 @@ ReactDOM.render(
             <Route path="settings/address-info" element={<AddressDetails />} />
             <Route path="settings/social-info" element={<SocialDetails />} />
             <Route path="settings/change-password" element={<PasswordDetails />} />
+            <Route path="stories/:firstName/:uid" element={<ModalStoryShow />} />
           </Route>
           <Route path="/login" element={<Login />}>
             <Route path="signIn" element={<SignIn />} />

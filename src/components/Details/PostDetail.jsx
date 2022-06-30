@@ -2,7 +2,6 @@ import React from 'react'
 import { firestore } from '../../firebase'
 import { useState, memo } from 'react';
 import { getAuth } from 'firebase/auth';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from 'react-image-gallery';
 import firebase from './../../firebase';

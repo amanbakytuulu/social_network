@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import SidebarRow from './SidebarRow';
-import HomeIcon from '@mui/icons-material/Home';
-import FlagIcon from '@mui/icons-material/Flag';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import FeedIcon from '@mui/icons-material/Feed';
-import ExploreIcon from '@mui/icons-material/Explore';
+import LanguageIcon from '@mui/icons-material/Language';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
@@ -24,10 +22,7 @@ function Sidebar() {
                         <SidebarRow Icon={FeedIcon} title="Новости" bg_gradient="btn-round-md bg-blue-gradient" active={active === 0 ? true : false} />
                     </NavLink>
                     <NavLink to="#" onClick={() => setActive(1)}>
-                        <SidebarRow Icon={ExploreIcon} title="Explore" bg_gradient="btn-round-md bg-orange-gradient" active={active === 1 ? true : false} />
-                    </NavLink>
-                    <NavLink to="#" onClick={() => setActive(2)}>
-                        <SidebarRow Icon={FlagIcon} title="Explore Stories" bg_gradient="btn-round-md bg-yellow-gradient" active={active === 2 ? true : false} />
+                        <SidebarRow Icon={LanguageIcon} title="Explore" bg_gradient="btn-round-md bg-yellow-gradient" active={active === 1 ? true : false} />
                     </NavLink>
                     <NavLink to="chat" onClick={() => setActive(3)}>
                         <SidebarRow Icon={ChatBubbleOutlineIcon} title="Сообщения" bg_gradient="btn-round-md bg-red-gradient" active={active === 3 ? true : false} />

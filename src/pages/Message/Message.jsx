@@ -138,15 +138,15 @@ function Message() {
             <div className="field">
               <button className="message__voice mr-1"><KeyboardVoiceIcon /></button>
               <input type="file" id="photo" style={{ display: 'none' }} />
-              <label htmlFor="photo">
-                <IosShareIcon />
-              </label>
+              {/* <label htmlFor="photo">
+                <IosShareIcon fontSize='small' />
+              </label> */}
 
               <p className="control has-icons-right">
                 <input className="input px-4" type="text" placeholder="Сообщение..."
                   value={message} onChange={(e) => setMessage(e.target.value)} />
               </p>
-              <button type="submit" className={`message__send ${message == "" && 'has-background-link-dark'}`} disabled={message == "" && true}><SendIcon className="message__send-icon" /> </button>
+              <button type="submit" className={`message__send ${message == "" && 'has-background-link-dark'} mb-1`} disabled={message == "" && true}><SendIcon className="message__send-icon" /> </button>
             </div>
           </form>
         </div>
